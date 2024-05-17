@@ -3,9 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OrthographicCameraPawn.h"
+#include "GameFramework/Actor.h"
+#include "IsometricCameraPawn.h"
+#include "PerspectiveCameraPawn.h"
 #include "GameFramework/PlayerController.h"
 #include <Kismet/KismetMaterialLibrary.h>
 #include "SMeshSelectionScrollBox.h"
+#include "WallSpline.h"
+#include "Delegates/Delegate.h" 
 #include "MeshSelectionScrollBox.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -16,11 +22,11 @@
 #include "MeshAssetManager.h"
 #include "ArchMeshActor.h"
 #include <SelectionBox.h>
+#include <MyWidget.h>
 #include "InteractiveArchController.generated.h"
 
-/**
- * 
- */
+DECLARE_DELEGATE_OneParam(FWallDelegate, FString);
+
 UCLASS()
 class ASSIGNMENT4_API AInteractiveArchController : public APlayerController
 {
@@ -40,18 +46,36 @@ public:
 	UFUNCTION()
 	void HideVisiblity();
 
+	UFUNCTION()
+	void ChangeView();
+
+	UFUNCTION(BlueprintCallable)
+	void Switch();
+
 	UPROPERTY()
 	FVector HitLocation;
 
 	UPROPERTY()
 	bool bMyActor = false;
 
+	UPROPERTY()
+	APawn* CurrentPawn;
+
+	UPROPERTY()
+	int num;
+
+	UPROPERTY()
+	int cnt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMeshSelectionScrollBox* ScrollWidget;
 
 	UPROPERTY()
 	USelectionBox* SelectionWidgetInstance;
+
+	UPROPERTY()
+	UMyWidget* MyWidgetInstance;
+
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnActor(const FMeshData& MeshData);
@@ -69,5 +93,62 @@ public:
 	TSubclassOf<USelectionBox> SelectionWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UMyWidget> MyWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AArchMeshActor* StaticMeshActor;
+
+	UPROPERTY()
+	UEnhancedInputLocalPlayerSubsystem* SubSystem;
+
+	
+
+	UPROPERTY()
+	ULocalPlayer* LocalPlayer;
+
+	UPROPERTY()
+	UInputMappingContext* MyMapping;
+
+	UPROPERTY()
+	class UInputMappingContext* SplineMappingContext;
+
+	/** Action to update location. */
+	UPROPERTY()
+	class UInputAction* LeftClickAction;
+
+	UPROPERTY()
+	class UInputAction* RightClickAction;
+
+	UPROPERTY()
+	class UInputAction* LeftArrow;
+
+	UPROPERTY()
+	class UInputAction* RightArrow;
+
+	UPROPERTY()
+	class UInputAction* UndoAction;
+
+	UPROPERTY()
+	TArray<AWallSpline*> WallSplineArr;
+
+	UPROPERTY()
+	int CurrWall;
+
+	UFUNCTION(BlueprintCallable)
+	void Delete();
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteAll();
+
+	void OnLeftClick(const struct FInputActionValue& ActionValue);
+	void OnRightClick(const struct FInputActionValue& ActionValue);
+	void Undo(const struct FInputActionValue& ActionValue);
+	void OnLeft(const struct FInputActionValue& ActionValue);
+	void OnRight(const struct FInputActionValue& ActionValue);
+
+
+	FWallDelegate WallConstructionDelegate;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeText(const FString& text);
 };
