@@ -3,19 +3,22 @@
 
 #include "InteractiveArchController.h"
 
-static void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+void AInteractiveArchController::KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
     bool bNegate = false,
     bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ)
+
 {
     FEnhancedActionKeyMapping& Mapping = InputMappingContext->MapKey(InputAction, Key);
     UObject* Outer = InputMappingContext->GetOuter();
 
-    if (bNegate) {
+    if (bNegate)
+    {
         UInputModifierNegate* Negate = NewObject<UInputModifierNegate>(Outer);
         Mapping.Modifiers.Add(Negate);
     }
 
-    if (bSwizzle) {
+    if (bSwizzle)
+    {
         UInputModifierSwizzleAxis* Swizzle = NewObject<UInputModifierSwizzleAxis>(Outer);
         Swizzle->Order = SwizzleOrder;
         Mapping.Modifiers.Add(Swizzle);
@@ -303,6 +306,8 @@ void AInteractiveArchController::SpawnActor(const FMeshData& MeshData)
         StaticMeshActor->SetMobility(EComponentMobility::Movable);
         StaticMeshActor->GetStaticMeshComponent()->SetStaticMesh(MeshData.Mesh);
         DynamicMaterial = UMaterialInstanceDynamic::Create(StaticMeshActor->GetStaticMeshComponent()->GetMaterial(0), this);
+        num--;
+        ChangeView();
 
     }
     bMyActor = false;

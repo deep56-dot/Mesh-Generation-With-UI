@@ -68,4 +68,10 @@ public:
 
 	void Rotate(const FInputActionValue& ActionValue);
 
+
+	UFUNCTION()
+	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+		bool bNegate,
+		bool bSwizzle, EInputAxisSwizzle SwizzleOrder);
+
 };

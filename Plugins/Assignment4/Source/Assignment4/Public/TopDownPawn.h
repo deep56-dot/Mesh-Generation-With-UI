@@ -61,8 +61,9 @@ public:
 
 	void Zoom(const struct FInputActionValue& ActionValue);
 
+	UFUNCTION()
 	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
-		bool bNegate = false,
-		bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ);
+		bool bNegate ,
+		bool bSwizzle , EInputAxisSwizzle SwizzleOrder );
 
 };

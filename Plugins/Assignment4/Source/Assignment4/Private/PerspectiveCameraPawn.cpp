@@ -48,9 +48,10 @@ void APerspectiveCameraPawn::Tick(float DeltaTime)
 }
 
 // Called to bind functionality to input
-static void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+void APerspectiveCameraPawn::KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
 	bool bNegate = false,
 	bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ)
+
 {
 	FEnhancedActionKeyMapping& Mapping = InputMappingContext->MapKey(InputAction, Key);
 	UObject* Outer = InputMappingContext->GetOuter();

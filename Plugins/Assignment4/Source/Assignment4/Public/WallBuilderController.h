@@ -71,6 +71,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeText(const FString& text);
 
+	UFUNCTION()
 	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
 		bool bNegate = false,
 		bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ);

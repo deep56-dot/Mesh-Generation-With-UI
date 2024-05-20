@@ -40,7 +40,7 @@ void AOrthographicCameraPawn::Tick(float DeltaTime)
 }
 
 // Called to bind functionality to input
-static void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+void AOrthographicCameraPawn::KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
 	bool bNegate = false,
 	bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ)
 {

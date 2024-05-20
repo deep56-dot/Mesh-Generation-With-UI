@@ -31,6 +31,7 @@ UCLASS()
 class ASSIGNMENT4_API AInteractiveArchController : public APlayerController
 {
 	GENERATED_BODY()
+	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key, bool bNegate, bool bSwizzle, EInputAxisSwizzle SwizzleOrder);
 	virtual void SetupInputComponent() override;
 
 
