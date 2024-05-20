@@ -2,11 +2,7 @@
 
 
 #include "TopDownPawn.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputAction.h"
-#include "InputMappingContext.h"
-#include "InputModifiers.h"
+
 
 
 // Sets default values
@@ -46,9 +42,8 @@ void ATopDownPawn::Tick(float DeltaTime)
 
 }
 
-static void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
-	bool bNegate = false,
-	bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ)
+
+void ATopDownPawn::KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key, bool bNegate, bool bSwizzle, EInputAxisSwizzle SwizzleOrder)
 {
 	FEnhancedActionKeyMapping& Mapping = InputMappingContext->MapKey(InputAction, Key);
 	UObject* Outer = InputMappingContext->GetOuter();
@@ -161,4 +156,6 @@ void ATopDownPawn::Zoom(const FInputActionValue& ActionValue)
 
 	/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Emerald, FString::Printf(TEXT("ROTATION: %f"), *Camera->GetRelativeRotation().ToString()));*/
 }
+
+
 

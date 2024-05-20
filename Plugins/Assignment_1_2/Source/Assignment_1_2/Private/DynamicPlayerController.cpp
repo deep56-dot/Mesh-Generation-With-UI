@@ -44,7 +44,7 @@ void ADynamicPlayerController::OnPressP()
 				if (SpawnedPawn)
 				{
 					Possess(SpawnedPawn);
-					GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString("Possessed spawned character"));
+					//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Cyan, FString("Possessed spawned character"));
 					CurrentPawn = SpawnedPawn;
 
 					if (RowData->PawnType == EPawnType::TopDown) {

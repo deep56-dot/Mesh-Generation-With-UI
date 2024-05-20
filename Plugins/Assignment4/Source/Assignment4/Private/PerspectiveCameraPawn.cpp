@@ -9,8 +9,9 @@ APerspectiveCameraPawn::APerspectiveCameraPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Sphere"));
-	Capsule->SetCapsuleHalfHeight(90);
-	Capsule->SetCapsuleRadius(40);
+	Capsule->SetCapsuleHalfHeight(44);
+	Capsule->SetCapsuleRadius(22);
+
 	SetRootComponent(Capsule);
 
 	//Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
@@ -18,8 +19,10 @@ APerspectiveCameraPawn::APerspectiveCameraPawn()
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->SetRelativeLocation(FVector(0, 0, 80));
 	SpringArmComponent->bUsePawnControlRotation = true;
-	SpringArmComponent->TargetArmLength = 600.f;
+	
+	SpringArmComponent->TargetArmLength =800.f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
@@ -107,18 +110,28 @@ void APerspectiveCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerIn
 void APerspectiveCameraPawn::Move(const FInputActionValue& ActionValue)
 {
 
-	FVector Input = ActionValue.Get<FInputActionValue::Axis3D>();
+		FVector MovementInput = ActionValue.Get<FVector>();
 
-	FVector Input2 = GetActorRotation().RotateVector(Input);
+	FRotator Rotation = Controller->GetControlRotation();
 
+	FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	AddMovementInput(Input2, MoveScale);
+	FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+	FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	FVector UpDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+
+	AddMovementInput(ForwardDirection, MovementInput.X);
+
+	AddMovementInput(RightDirection, MovementInput.Y);
+
+	AddMovementInput(UpDirection, MovementInput.Z);
 
 }
 
 void APerspectiveCameraPawn::Rotate(const FInputActionValue& ActionValue)
 {
-
 	FVector2D Rotattion = ActionValue.Get<FVector2D>();
 	AddControllerYawInput(Rotattion.X);
 	AddControllerPitchInput(-Rotattion.Y);

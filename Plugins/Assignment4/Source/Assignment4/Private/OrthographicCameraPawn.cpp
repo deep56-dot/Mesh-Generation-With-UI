@@ -7,15 +7,18 @@
 AOrthographicCameraPawn::AOrthographicCameraPawn()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SceneComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Scene"));
+	RootComponent = SceneComponent;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArmComponent->TargetArmLength = 1000;
+	SpringArmComponent->TargetOffset.Z = 1000;
+	SpringArmComponent->SetRelativeRotation(FRotator(-90, 0, 0));
 	SpringArmComponent->SetupAttachment(RootComponent);
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	CameraComponent->SetRelativeRotation(FRotator(-90, 0, 0));
+
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
+	//CameraComponent->SetProjectionMode(ECameraProjectionMode::Orthographic);
 
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Floating Movement"));
@@ -76,6 +79,10 @@ void AOrthographicCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 	ZoomAction->ValueType = EInputActionValueType::Axis1D;
 	KeyMap(PawnMapping, ZoomAction, EKeys::MouseWheelAxis);
 
+	RotateAction = NewObject<UInputAction>(this);
+	RotateAction->ValueType = EInputActionValueType::Axis2D;
+	KeyMap(PawnMapping, RotateAction, EKeys::Mouse2D);
+
 	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	APlayerController* TDPC = Cast<APlayerController>(Controller);
 
@@ -84,6 +91,7 @@ void AOrthographicCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AOrthographicCameraPawn::Move);
 	EIC->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AOrthographicCameraPawn::Zoom);
+	EIC->BindAction(RotateAction, ETriggerEvent::Triggered, this, &AOrthographicCameraPawn::Rotate);
 
 
 	ULocalPlayer* LocalPlayer = TDPC->GetLocalPlayer();
@@ -109,6 +117,14 @@ void AOrthographicCameraPawn::Zoom(const FInputActionValue& ActionValue)
 
 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("zoom inout"));
 	float ZoomValue = ActionValue.Get<float>();
-	float NewOrthoWidth = CameraComponent->OrthoWidth - (ZoomValue * 50);
-	CameraComponent->OrthoWidth = FMath::Clamp(NewOrthoWidth, 512.0f, 4096.0f); // Adjust these values to your desired min/max zoom levels
+	float NewOrthoWidth = SpringArmComponent->TargetOffset.Z - (ZoomValue * 50);
+	SpringArmComponent->TargetOffset.Z = FMath::Clamp(NewOrthoWidth, 512.0f, 4096.0f); // Adjust these values to your desired min/max zoom levels
+}
+
+void AOrthographicCameraPawn::Rotate(const FInputActionValue& ActionValue)
+{
+
+	FVector2D Rotattion = ActionValue.Get<FVector2D>();
+	AddControllerYawInput(Rotattion.X);
+	//AddControllerPitchInput(-Rotattion.Y);
 }

@@ -5,6 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "WallSpline.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
+#include "InputModifiers.h"
 #include "Delegates/Delegate.h"    
 #include "WallBuilderController.generated.h"
 
@@ -65,5 +70,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeText(const FString& text);
+
+	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+		bool bNegate = false,
+		bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ);
 	
 };

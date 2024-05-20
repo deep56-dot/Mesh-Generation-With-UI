@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UFloatingPawnMovement* Movement;
 
+	UPROPERTY(EditAnywhere)
+	USceneComponent* SceneComponent;
+
 	UPROPERTY()
 	USpringArmComponent* SpringArmComponent;
 
@@ -76,3 +79,5 @@ public:
 	float RotateScale;
 
 };
+
+

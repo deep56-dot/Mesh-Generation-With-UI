@@ -2,15 +2,9 @@
 
 
 #include "WallBuilderController.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputAction.h"
-#include "InputMappingContext.h"
-#include "InputModifiers.h"
 
-static void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
-	bool bNegate = false,
-	bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ)
+
+void AWallBuilderController::KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key, bool bNegate, bool bSwizzle, EInputAxisSwizzle SwizzleOrder)
 {
 	FEnhancedActionKeyMapping& Mapping = InputMappingContext->MapKey(InputAction, Key);
 	UObject* Outer = InputMappingContext->GetOuter();
@@ -201,5 +195,7 @@ void AWallBuilderController::OnRight(const FInputActionValue& ActionValue)
 
 	}
 }
+
+
 
 

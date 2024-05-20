@@ -55,6 +55,10 @@ public:
 	UPROPERTY()
 	FVector HitLocation;
 
+
+	UPROPERTY()
+	FVector ViewHitLocation=FVector(50,50,100);
+
 	UPROPERTY()
 	bool bMyActor = false;
 
@@ -73,7 +77,7 @@ public:
 	UPROPERTY()
 	USelectionBox* SelectionWidgetInstance;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMyWidget* MyWidgetInstance;
 
 
@@ -110,6 +114,9 @@ public:
 	UInputMappingContext* MyMapping;
 
 	UPROPERTY()
+	UInputMappingContext* CameraMapping;
+
+	UPROPERTY()
 	class UInputMappingContext* SplineMappingContext;
 
 	/** Action to update location. */
@@ -133,6 +140,12 @@ public:
 
 	UPROPERTY()
 	int CurrWall;
+
+	UPROPERTY()
+	bool bAssignment3;
+
+	UPROPERTY()
+	APawn* SpawnedPawn;
 
 	UFUNCTION(BlueprintCallable)
 	void Delete();

@@ -8,6 +8,11 @@
 #include <GameFramework/SpringArmComponent.h>
 #include <GameFramework/FloatingPawnMovement.h>
 #include <Camera/CameraComponent.h>
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
+#include "InputModifiers.h"
 #include "TopDownPawn.generated.h"
 
 UCLASS()
@@ -55,5 +60,9 @@ public:
 	void Move(const struct FInputActionValue& ActionValue);
 
 	void Zoom(const struct FInputActionValue& ActionValue);
+
+	void KeyMap(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
+		bool bNegate = false,
+		bool bSwizzle = false, EInputAxisSwizzle SwizzleOrder = EInputAxisSwizzle::YXZ);
 
 };

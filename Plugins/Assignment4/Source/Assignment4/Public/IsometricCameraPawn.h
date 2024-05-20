@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
+#include "InputModifiers.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "IsometricCameraPawn.generated.h"
@@ -36,6 +41,19 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = "Camera")
 	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY()
+	class UInputAction* ClockRotateAction;
+
+
+	UPROPERTY()
+	class UInputAction* AntiClockRotateAction;
+
+	//UPROPERTY()
+	//class UInputAction* RotateAction;
+
+	UPROPERTY()
+	class UInputMappingContext* PawnMapping;
 
 	float RotationAngleIncrement = 45.0f;
 	float TargetYaw = 0.0f;

@@ -86,10 +86,10 @@ void AFirstPersonPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	KeyMap(PawnMappingContext, MoveAction, EKeys::Q, true, true, EInputAxisSwizzle::ZYX);
 	KeyMap(PawnMappingContext, MoveAction, EKeys::E, false, true, EInputAxisSwizzle::ZYX);
 
+
 	RotateAction = NewObject<UInputAction>(this);
 	RotateAction->ValueType = EInputActionValueType::Axis2D;
-	KeyMap(PawnMappingContext, RotateAction, EKeys::MouseY);
-	KeyMap(PawnMappingContext, RotateAction, EKeys::MouseX, false, true);
+	KeyMap(PawnMappingContext, RotateAction, EKeys::Mouse2D);
 
 	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
@@ -125,12 +125,7 @@ void AFirstPersonPawn::Move(const FInputActionValue& ActionValue)
 void AFirstPersonPawn::Rotate(const FInputActionValue& ActionValue)
 {
 
-	FRotator Input(ActionValue[0], ActionValue[1], ActionValue[2]);
-	Input *= GetWorld()->GetDeltaSeconds() * RotateScale;
-
-	Input += GetActorRotation();
-	Input.Pitch = FMath::ClampAngle(Input.Pitch, -89.9f, 89.9f);
-	Input.Roll = 0;
-
-	SetActorRotation(Input);
+	FVector2D Rotattion = ActionValue.Get<FVector2D>();
+	AddControllerYawInput(Rotattion.X);
+	AddControllerPitchInput(-Rotattion.Y);
 }

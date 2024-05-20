@@ -4,6 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "FirstPersonPawn.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
+#include "InputModifiers.h"
 #include "GameFramework/PlayerController.h"
 #include "BaseCharacter.h"
 #include "PawnAttributeAsset.h"
@@ -58,4 +63,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DisplayAttributes(UPawnAttributeAsset* Asset);
+
+	UPROPERTY()
+	class UInputMappingContext* DynamicMappingContext;
+
+	/** Action to update location. */
+	UPROPERTY()
+	class UInputAction* ToggleAction;
 };

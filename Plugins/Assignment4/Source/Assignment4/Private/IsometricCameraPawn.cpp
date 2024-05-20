@@ -10,8 +10,9 @@ AIsometricCameraPawn::AIsometricCameraPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->SetRelativeLocation(FVector(0,0,300));
 	SpringArmComponent->SetRelativeRotation(FRotator(-45.0, 0.0f, 0.0f));
-	SpringArmComponent->TargetArmLength = 700.0f;
+	SpringArmComponent->TargetArmLength = 2000.0f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
@@ -27,17 +28,18 @@ void AIsometricCameraPawn::BeginPlay()
 // Called every frame
 void AIsometricCameraPawn::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	/*Super::Tick(DeltaTime);
 
 	float CurrentYaw = SpringArmComponent->GetRelativeRotation().Yaw;
 	float NewYaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, RotationSpeed);
 	FRotator NewRelativeRotation = FRotator(SpringArmComponent->GetRelativeRotation().Pitch, NewYaw, SpringArmComponent->GetRelativeRotation().Roll);
-	SpringArmComponent->SetRelativeRotation(NewRelativeRotation);
+	SpringArmComponent->SetRelativeRotation(NewRelativeRotation);*/
 
-	// Debug message to display rotation
-	//FVector DebugLocation = GetActorLocation() + FVector(0.0f, 0.0f, 100.0f); // Adjust Z offset as needed
-	//FString RotationString = FString::Printf(TEXT("Spring Arm Rotation: %s"), *NewRelativeRotation.ToString());
-	//DrawDebugString(GetWorld(), DebugLocation, RotationString, nullptr, FColor::White, DeltaTime);
+	Super::Tick(DeltaTime);
+
+	FRotator CurrentRotation = SpringArmComponent->GetRelativeRotation();
+	FRotator TargetRotation = FRotator(CurrentRotation.Pitch, TargetYaw, CurrentRotation.Roll);
+	SpringArmComponent->SetRelativeRotation(FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime));
 
 }
 
@@ -45,12 +47,43 @@ void AIsometricCameraPawn::Tick(float DeltaTime)
 void AIsometricCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAction("RotateClockwise", IE_Pressed, this, &AIsometricCameraPawn::RotateCameraClockwise);
-	PlayerInputComponent->BindAction("RotateCounterClockwise", IE_Pressed, this, &AIsometricCameraPawn::RotateCameraCounterClockwise);
+	
+
+	PawnMapping = NewObject<UInputMappingContext>(this);
+
+	ClockRotateAction = NewObject<UInputAction>(this);
+	ClockRotateAction->ValueType = EInputActionValueType::Boolean;
+	PawnMapping->MapKey(ClockRotateAction, EKeys::Q);
+
+	AntiClockRotateAction = NewObject<UInputAction>(this);
+	AntiClockRotateAction->ValueType = EInputActionValueType::Boolean;
+	PawnMapping->MapKey(AntiClockRotateAction, EKeys::E);
+
+	
+
+	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	APlayerController* TDPC = Cast<APlayerController>(Controller);
+
+	check(EIC)
+
+
+		EIC->BindAction(ClockRotateAction, ETriggerEvent::Completed, this, &AIsometricCameraPawn::RotateCameraClockwise);
+	    EIC->BindAction(AntiClockRotateAction, ETriggerEvent::Completed, this, &AIsometricCameraPawn::RotateCameraCounterClockwise);
+
+
+
+	ULocalPlayer* LocalPlayer = TDPC->GetLocalPlayer();
+	check(LocalPlayer);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+
+	Subsystem->AddMappingContext(PawnMapping, 0);
 }
 
 void AIsometricCameraPawn::RotateCameraCounterClockwise() {
-	//SpringArmComponent->AddRelativeRotation(FRotator(0.0f, RotationAngleIncrement, 0.0f));
+
 	TargetYaw += RotationAngleIncrement;
 	if (TargetYaw > 180.0f) {
 		TargetYaw = -180.0f + (TargetYaw - 180.0f);
@@ -58,7 +91,6 @@ void AIsometricCameraPawn::RotateCameraCounterClockwise() {
 
 }
 void AIsometricCameraPawn::RotateCameraClockwise() {
-	//SpringArmComponent->AddRelativeRotation(FRotator(0.0f, -RotationAngleIncrement, 0.0f));
 
 	TargetYaw -= RotationAngleIncrement;
 

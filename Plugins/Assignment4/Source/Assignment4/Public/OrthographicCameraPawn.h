@@ -37,15 +37,21 @@ public:
 	UPROPERTY()
 	class UInputAction* MoveAction;
 
-	/** Look Input Action */
+
 	UPROPERTY()
 	class UInputAction* ZoomAction;
+
+	UPROPERTY()
+	class UInputAction* RotateAction;
 
 	UPROPERTY()
 	class UInputMappingContext* PawnMapping;
 
 	UPROPERTY()
 	UFloatingPawnMovement* Movement;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* SceneComponent;
 
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
@@ -59,5 +65,7 @@ public:
 	void Move(const struct FInputActionValue& ActionValue);
 
 	void Zoom(const struct FInputActionValue& ActionValue);
+
+	void Rotate(const FInputActionValue& ActionValue);
 
 };

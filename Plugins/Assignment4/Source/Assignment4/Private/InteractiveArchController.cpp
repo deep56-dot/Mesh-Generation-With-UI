@@ -28,6 +28,7 @@ void AInteractiveArchController::SetupInputComponent()
     NewObject<APlayerController>(this, AInteractiveArchController::StaticClass());
 
      MyMapping = NewObject<UInputMappingContext>(this);
+     CameraMapping = NewObject<UInputMappingContext>(this);
     UInputAction* ClickAction = NewObject<UInputAction>(this);
     ClickAction->ValueType = EInputActionValueType::Boolean;
     MyMapping->MapKey(ClickAction, EKeys::LeftMouseButton);
@@ -38,7 +39,7 @@ void AInteractiveArchController::SetupInputComponent()
 
     UInputAction* ChangeViewAction = NewObject<UInputAction>(this);
     ChangeViewAction->ValueType = EInputActionValueType::Boolean;
-    MyMapping->MapKey(ChangeViewAction, EKeys::P);
+    CameraMapping->MapKey(ChangeViewAction, EKeys::P);
 
 
     //Wall Spline
@@ -85,6 +86,8 @@ void AInteractiveArchController::SetupInputComponent()
     SubSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
  
     SubSystem->AddMappingContext(MyMapping, 0);
+    SubSystem->AddMappingContext(CameraMapping, 0);
+
 }
 
 AInteractiveArchController::AInteractiveArchController()
@@ -97,7 +100,7 @@ AInteractiveArchController::AInteractiveArchController()
     CurrentPawn = Cast<AIsometricCameraPawn>(APawn::StaticClass());
     if (CurrentPawn) {
         Possess(CurrentPawn);
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Black, TEXT("not sapwefns"));
+        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Black, TEXT("not sapwefns"));
     }
     cnt = 1;
 }
@@ -128,12 +131,24 @@ void AInteractiveArchController::BeginPlay()
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "in");
+    //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "in");
 
-    FVector SpawnLocation_ = FVector(50, 50, 50);
+    FVector SpawnLocation_ = FVector(50, 50, 100);
     FRotator SpawnRotation = FRotator(0, 0, 0);
+    bAssignment3 = false;
+   SpawnedPawn = GetWorld()->SpawnActor<AOrthographicCameraPawn>(AOrthographicCameraPawn::StaticClass(), SpawnLocation_, FRotator::ZeroRotator, SpawnParams);
+    if (SpawnedPawn)
+    {
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Ortho");
+        Possess(SpawnedPawn);
+        if (bAssignment3)
+            SubSystem->AddMappingContext(SplineMappingContext, 0);
+        else
+            SubSystem->AddMappingContext(MyMapping, 0);
+        SubSystem->AddMappingContext(CameraMapping, 0);
 
-    num = 0;
+    }
+    num = 2;
 }
 
 
@@ -157,19 +172,21 @@ void AInteractiveArchController::Click()
                 bMyActor = false;
                 StaticMeshActor = ArchActor;
                 HitLocation = StaticMeshActor->GetActorLocation();
-                GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Actor");
+                //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Actor");
                 SelectionWidgetInstance->MeshSelectionScrollBoxWidget->SetVisibility(ESlateVisibility::Visible);
                 SelectionWidgetInstance->MaterialSelectionScrollBoxWidget->SetVisibility(ESlateVisibility::Visible);
                 SelectionWidgetInstance->TextureSelectionScrollBoxWidget->SetVisibility(ESlateVisibility::Visible);
                 DynamicMaterial = UMaterialInstanceDynamic::Create(StaticMeshActor->GetStaticMeshComponent()->GetMaterial(0), this);
-
+                ViewHitLocation = HitLocation;
+                num--;
+                ChangeView();
             }
             else {
-                GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Floor");
+                //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Floor");
                 SelectionWidgetInstance->MeshSelectionScrollBoxWidget->SetVisibility(ESlateVisibility::Visible);
 
             }
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, *FString::Printf(TEXT("%s"), *HitResult.Location.ToString()));
+            //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, *FString::Printf(TEXT("%s"), *HitResult.Location.ToString()));
         }
     }
 }
@@ -181,39 +198,60 @@ void AInteractiveArchController::HideVisiblity() {
 }
 
 void AInteractiveArchController::ChangeView() {
-    num = (num + 1) % 2;
+    num = ((num + 1) % 3);
+    //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("%d"), num));
+
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    FVector SpawnLocation_ = FVector(50, 50, 50);
+    FVector SpawnLocation_ = ViewHitLocation+FVector(0,0,50);
     FRotator SpawnRotation = FRotator(0, 0, 0);
     if (num == 1) {
-        APawn* SpawnedPawn = GetWorld()->SpawnActor<APerspectiveCameraPawn>(APerspectiveCameraPawn::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+        SpawnedPawn->Destroy();
+        SpawnedPawn= GetWorld()->SpawnActor<APerspectiveCameraPawn>(APerspectiveCameraPawn::StaticClass(), SpawnLocation_ , FRotator::ZeroRotator, SpawnParams);
         if (SpawnedPawn)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Per");
+   
             Possess(SpawnedPawn);
-           
+            if (bAssignment3)
+                SubSystem->AddMappingContext(SplineMappingContext, 0);
+            else
+                SubSystem->AddMappingContext(MyMapping, 0);
+            SubSystem->AddMappingContext(CameraMapping, 0);
+
         }
     }
     else if(num==2)
     {
-        APawn* SpawnedPawn = GetWorld()->SpawnActor<AOrthographicCameraPawn>(AOrthographicCameraPawn::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+        SpawnedPawn->Destroy();
+
+        SpawnedPawn = GetWorld()->SpawnActor<AOrthographicCameraPawn>(AOrthographicCameraPawn::StaticClass(), SpawnLocation_, FRotator::ZeroRotator, SpawnParams);
         if (SpawnedPawn)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Ortho");
+         
             Possess(SpawnedPawn);
-            
-           
+            if (bAssignment3)
+                SubSystem->AddMappingContext(SplineMappingContext, 0);
+            else
+                SubSystem->AddMappingContext(MyMapping, 0);
+            SubSystem->AddMappingContext(CameraMapping, 0);
+
         }
     }
     else
     {
-        APawn* SpawnedPawn = GetWorld()->SpawnActor<AIsometricCameraPawn>(AIsometricCameraPawn::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+        SpawnedPawn->Destroy();
+
+        SpawnedPawn = GetWorld()->SpawnActor<AIsometricCameraPawn>(AIsometricCameraPawn::StaticClass(), SpawnLocation_, FRotator::ZeroRotator, SpawnParams);
         if (SpawnedPawn)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Iso");
+           
             Possess(SpawnedPawn);
-        
+            if (bAssignment3)
+                SubSystem->AddMappingContext(SplineMappingContext, 0);
+            else
+                SubSystem->AddMappingContext(MyMapping, 0);
+            SubSystem->AddMappingContext(CameraMapping, 0);
+
             
         }
     }
@@ -222,19 +260,21 @@ void AInteractiveArchController::ChangeView() {
 
 void AInteractiveArchController::Switch() {
     if (cnt % 2 == 1) {
+        bAssignment3 = true;
         SelectionWidgetInstance->RemoveFromViewport();
         MyWidgetInstance->AddToViewport();
-        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "jausdkhs");
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "jausdkhs");
         SubSystem->ClearAllMappings();
         SubSystem->AddMappingContext(SplineMappingContext, 0);
-
+        SubSystem->AddMappingContext(CameraMapping, 0);
     }
     else {
         MyWidgetInstance->RemoveFromViewport();
         SelectionWidgetInstance->AddToViewport();
-        
         SubSystem->ClearAllMappings();
         SubSystem->AddMappingContext(MyMapping, 0);
+        SubSystem->AddMappingContext(CameraMapping, 0);
+
     }
     cnt++;
 }
@@ -256,7 +296,9 @@ void AInteractiveArchController::SpawnActor(const FMeshData& MeshData)
         StaticMeshActor = GetWorld()->SpawnActor<AArchMeshActor>(AArchMeshActor::StaticClass(), HitLocation, Rotation, SpawnParams);
     }
     if (StaticMeshActor) {
-        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Spawn");
+        ViewHitLocation = HitLocation;
+
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Spawn");
 
         StaticMeshActor->SetMobility(EComponentMobility::Movable);
         StaticMeshActor->GetStaticMeshComponent()->SetStaticMesh(MeshData.Mesh);
@@ -279,7 +321,7 @@ void AInteractiveArchController::SetTexture(const FTextureData& TextureData)
 {
     if (DynamicMaterial) {
 
-        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, "2");
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, "2");
         DynamicMaterial->SetTextureParameterValue("BaseColorTexture", TextureData.Texture); // Set texture parameter in material
         StaticMeshActor->GetStaticMeshComponent()->SetMaterial(0, DynamicMaterial);
     }
