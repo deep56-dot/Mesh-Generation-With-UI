@@ -14,8 +14,8 @@ public class UE_AssignmentUI : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-        PublicIncludePaths.AddRange(new string[] {
-          "D:/UE/Assignment4/Plugins/Assignment_1_2/Source/Assignment_1_2/Public" });
+    /*    PublicIncludePaths.AddRange(new string[] {
+          "D:/UE/Assignment4/Plugins/Assignment_1_2/Source/Assignment_1_2/Public" });*/
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
