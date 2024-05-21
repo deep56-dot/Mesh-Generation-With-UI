@@ -10,12 +10,15 @@ AIsometricCameraPawn::AIsometricCameraPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = 5.f;
 	SpringArmComponent->SetRelativeLocation(FVector(0,0,300));
-	SpringArmComponent->SetRelativeRotation(FRotator(-45.0, 0.0f, 0.0f));
+	SpringArmComponent->SetRelativeRotation(FRotator(-45.0,45.0f, 0.0f));
 	SpringArmComponent->TargetArmLength = 2000.0f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	TargetYaw = 45.0f;
 }
 
 // Called when the game starts or when spawned
@@ -28,12 +31,7 @@ void AIsometricCameraPawn::BeginPlay()
 // Called every frame
 void AIsometricCameraPawn::Tick(float DeltaTime)
 {
-	/*Super::Tick(DeltaTime);
 
-	float CurrentYaw = SpringArmComponent->GetRelativeRotation().Yaw;
-	float NewYaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, RotationSpeed);
-	FRotator NewRelativeRotation = FRotator(SpringArmComponent->GetRelativeRotation().Pitch, NewYaw, SpringArmComponent->GetRelativeRotation().Roll);
-	SpringArmComponent->SetRelativeRotation(NewRelativeRotation);*/
 
 	Super::Tick(DeltaTime);
 
@@ -53,11 +51,16 @@ void AIsometricCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	ClockRotateAction = NewObject<UInputAction>(this);
 	ClockRotateAction->ValueType = EInputActionValueType::Boolean;
-	PawnMapping->MapKey(ClockRotateAction, EKeys::Q);
+	PawnMapping->MapKey(ClockRotateAction, EKeys::E);
 
 	AntiClockRotateAction = NewObject<UInputAction>(this);
 	AntiClockRotateAction->ValueType = EInputActionValueType::Boolean;
-	PawnMapping->MapKey(AntiClockRotateAction, EKeys::E);
+	PawnMapping->MapKey(AntiClockRotateAction, EKeys::Q);
+
+	ZoomAction = NewObject<UInputAction>(this);
+	ZoomAction->ValueType = EInputActionValueType::Axis1D;
+	PawnMapping->MapKey(ZoomAction, EKeys::MouseWheelAxis);
+
 
 	
 
@@ -69,6 +72,7 @@ void AIsometricCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 		EIC->BindAction(ClockRotateAction, ETriggerEvent::Completed, this, &AIsometricCameraPawn::RotateCameraClockwise);
 	    EIC->BindAction(AntiClockRotateAction, ETriggerEvent::Completed, this, &AIsometricCameraPawn::RotateCameraCounterClockwise);
+		EIC->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AIsometricCameraPawn::Zoom);
 
 
 
@@ -78,7 +82,7 @@ void AIsometricCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(Subsystem);
 
-
+	Subsystem->ClearAllMappings();
 	Subsystem->AddMappingContext(PawnMapping, 0);
 }
 
@@ -98,4 +102,13 @@ void AIsometricCameraPawn::RotateCameraClockwise() {
 		TargetYaw = 180.0f + (TargetYaw + 180.0f);
 	}
 
+}
+
+void AIsometricCameraPawn::Zoom(const FInputActionValue& ActionValue)
+{
+
+	
+	float ZoomValue = ActionValue.Get<float>();
+	float NewOrthoWidth = SpringArmComponent->TargetArmLength - (ZoomValue * 20);
+	SpringArmComponent->TargetArmLength = FMath::Clamp(NewOrthoWidth, 500.0f, 3000.0f); // Adjust these values to your desired min/max zoom levels
 }

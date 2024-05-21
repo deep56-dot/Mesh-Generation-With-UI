@@ -110,7 +110,7 @@ void AWallSpline::GenerateWall()
 
 			SplineMesh->SetMobility(EComponentMobility::Movable);
 			SplineMesh->SetStaticMesh(StaticMesh);
-			SplineMesh->SetMaterial(0, SplineMaterial);
+			//SplineMesh->SetMaterial(0, SplineMaterial);
 			SplineMesh->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
 
 			SplineMesh->SetupAttachment(SplineComponent);

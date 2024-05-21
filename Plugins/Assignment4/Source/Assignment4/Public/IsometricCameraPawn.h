@@ -36,6 +36,8 @@ public:
 
 	void RotateCameraClockwise();
 
+	void Zoom(const FInputActionValue& ActionValue);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = "Camera")
 	UCameraComponent* CameraComponent;
 	
@@ -48,6 +50,9 @@ public:
 
 	UPROPERTY()
 	class UInputAction* AntiClockRotateAction;
+
+	UPROPERTY()
+	class UInputAction* ZoomAction;
 
 	//UPROPERTY()
 	//class UInputAction* RotateAction;

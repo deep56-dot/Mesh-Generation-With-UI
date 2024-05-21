@@ -11,8 +11,10 @@ AOrthographicCameraPawn::AOrthographicCameraPawn()
 	RootComponent = SceneComponent;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArmComponent->TargetOffset.Z = 1000;
+	SpringArmComponent->TargetOffset.Z = 1500;
 	SpringArmComponent->SetRelativeRotation(FRotator(-90, 0, 0));
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = 5.f;
 	SpringArmComponent->SetupAttachment(RootComponent);
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -100,7 +102,7 @@ void AOrthographicCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check(Subsystem);
 
-
+	Subsystem->ClearAllMappings();
 	Subsystem->AddMappingContext(PawnMapping, 0);
 
 }
@@ -109,13 +111,13 @@ void AOrthographicCameraPawn::Move(const FInputActionValue& ActionValue)
 {
 	FVector value = ActionValue.Get<FInputActionValue::Axis3D>();
 	value.Z = 0;
-	AddMovementInput(value, 2);
+	AddMovementInput(value);
 }
 
 void AOrthographicCameraPawn::Zoom(const FInputActionValue& ActionValue)
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("zoom inout"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, TEXT("zoom inout"));
 	float ZoomValue = ActionValue.Get<float>();
 	float NewOrthoWidth = SpringArmComponent->TargetOffset.Z - (ZoomValue * 50);
 	SpringArmComponent->TargetOffset.Z = FMath::Clamp(NewOrthoWidth, 512.0f, 4096.0f); // Adjust these values to your desired min/max zoom levels

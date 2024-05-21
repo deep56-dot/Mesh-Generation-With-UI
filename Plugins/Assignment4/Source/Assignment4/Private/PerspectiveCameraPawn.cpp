@@ -19,6 +19,8 @@ APerspectiveCameraPawn::APerspectiveCameraPawn()
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArmComponent->SetupAttachment(RootComponent);
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->CameraLagSpeed = 5.f;
 	SpringArmComponent->SetRelativeLocation(FVector(0, 0, 80));
 	SpringArmComponent->bUsePawnControlRotation = true;
 	

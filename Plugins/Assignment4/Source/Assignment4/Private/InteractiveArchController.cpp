@@ -131,6 +131,7 @@ void AInteractiveArchController::BeginPlay()
     SelectionWidgetInstance->MeshSelectionScrollBoxWidget->OnMyController.BindUObject(this, &AInteractiveArchController::SpawnActor);
     SelectionWidgetInstance->MaterialSelectionScrollBoxWidget->MaterialController.BindUObject(this, &AInteractiveArchController::SetMaterial);
     SelectionWidgetInstance->TextureSelectionScrollBoxWidget->TextureController.BindUObject(this, &AInteractiveArchController::SetTexture);
+  
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -148,6 +149,7 @@ void AInteractiveArchController::BeginPlay()
             SubSystem->AddMappingContext(SplineMappingContext, 0);
         else
             SubSystem->AddMappingContext(MyMapping, 0);
+            
         SubSystem->AddMappingContext(CameraMapping, 0);
 
     }
@@ -219,6 +221,7 @@ void AInteractiveArchController::ChangeView() {
                 SubSystem->AddMappingContext(SplineMappingContext, 0);
             else
                 SubSystem->AddMappingContext(MyMapping, 0);
+
             SubSystem->AddMappingContext(CameraMapping, 0);
 
         }
@@ -272,12 +275,13 @@ void AInteractiveArchController::Switch() {
         SubSystem->AddMappingContext(CameraMapping, 0);
     }
     else {
+        bAssignment3 = false;
+
         MyWidgetInstance->RemoveFromViewport();
         SelectionWidgetInstance->AddToViewport();
         SubSystem->ClearAllMappings();
         SubSystem->AddMappingContext(MyMapping, 0);
         SubSystem->AddMappingContext(CameraMapping, 0);
-
     }
     cnt++;
 }
@@ -372,8 +376,10 @@ void AInteractiveArchController::OnLeftClick(const FInputActionValue& ActionValu
     if (HitResult.bBlockingHit)
     {
         FVector ClickLocation = HitResult.Location;
-    
+        if (CurrWall < WallSplineArr.Num())
+        {
             WallSplineArr[CurrWall]->SetPointLocation(ClickLocation);
+        }
         if (WallSplineArr[CurrWall]->SpileArr.Num() == 1)
             WallConstructionDelegate.ExecuteIfBound("Construction Statrted");
         
