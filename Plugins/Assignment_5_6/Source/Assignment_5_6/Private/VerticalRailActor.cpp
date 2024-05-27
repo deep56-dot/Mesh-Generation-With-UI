@@ -21,33 +21,33 @@ void AVerticalRailActor::OnConstruction(const FTransform& Transform)
 	GenerateCube(Dimentions);
 	GenerateTopHorizontalRail(Dimentions);
 	GenerateBottomHorizontalRail(Dimentions);
-	if(RailingType==ETypeOfRail::Sphere)
+	if(RailingType==ETypeOfRail::RoundTurnedCapital)
 	{
-		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y /4, 2, Dimentions.Y / 8, 1, 10, 10);
+		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 2.7, Dimentions.Y / 8, 1, 10, 10);
+
 		GenerateSphere(Dimentions.X / 2, 32, 32);
 	}
-	else if(RailingType==ETypeOfRail::Pyramid)
+	else if(RailingType==ETypeOfRail::GothicStarTop)
 	{
 		GeneratePyramid(Dimentions);
 	}
-	else if (RailingType == ETypeOfRail::Egg)
+	else if (RailingType == ETypeOfRail::ACornCapital)
 	{
 		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 2, Dimentions.Y / 8, 1, 10, 10);
 		GenerateEgg(Dimentions.X / 2, 32, 32);
 	}
-	else if (RailingType == ETypeOfRail::Windsor)
+	else if (RailingType == ETypeOfRail::PyramidTop)
 	{
 		GenerateCubePyramid(Dimentions);
 
 	}
-	else if (RailingType == ETypeOfRail::Extra)
+	else if (RailingType == ETypeOfRail::WindsorTurnedCapital)
 	{
 
-		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 2, Dimentions.Y / 8, 1, 10, 10);
+		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 2.7, Dimentions.Y / 8, 1, 10, 10);
+		GeneratePyramidOverSphere(Dimentions);
 		GenerateSphere(Dimentions.X / 2, 32, 32);
-		GenerateCurvedCone(16, 16, 3, 5);
-		//GeneratePyramidOverSphere(FVector(Dimentions.X, Dimentions.Y, Dimentions.Z));
-
+		
 	}
 }
 
@@ -232,7 +232,7 @@ void AVerticalRailActor::GenerateTopHorizontalRail(FVector Dimensions)
 {
 	TArray<FVector> Vertices;
 
-	float L = Dimensions.Z / 2.0f;
+	float L = Dimentions.Z/ 2.0f;
 	float W = Dimensions.Y/ 2.0f;
 	float H = 7;
 
@@ -382,7 +382,7 @@ void AVerticalRailActor::GenerateCurvedCone(const int32& NumSegments, const int3
 			float X = RingRadius * FMath::Cos(Theta);
 			float Y = RingRadius * FMath::Sin(Theta);
 
-			Vertices.Add(FVector(X, Y, Z + 116.3));
+			Vertices.Add(FVector(X, Y, Z + 5+(Dimentions.Z/2)));
 			Normals.Add(FVector(X, Y, 0).GetSafeNormal());
 			UVs.Add(FVector2D(SegmentFraction, RingFraction));
 			
@@ -419,7 +419,7 @@ void AVerticalRailActor::GeneratePyramid(FVector Dimensions)
 
 	float L = Dimensions.X / 2.0f;
 	float W = Dimensions.Y / 2.0f;
-	float H = 20;
+	float H = 15;
 
 	Vertices.Add(FVector(-L, -W, 0+(Dimensions.Z/2))); //0
 	Vertices.Add(FVector(L, -W, 0+(Dimensions.Z/2))); //1
@@ -461,6 +461,57 @@ void AVerticalRailActor::GeneratePyramid(FVector Dimensions)
 
 	ProceduralMeshRoot->SetMaterial(1, Material);
 }
+
+void AVerticalRailActor::GeneratePyramidOverSphere(FVector Dimensions)
+{
+	TArray<FVector> Vertices;
+
+	float L = Dimensions.X / 4.0f;
+	float W = Dimensions.X / 4.0f;
+	float H = 12;
+
+	Vertices.Add(FVector(-L, -W, 0 + ((Dimensions.Z / 2)+7))); //0
+	Vertices.Add(FVector(L, -W, 0 + ((Dimensions.Z / 2)+7))); //1
+	Vertices.Add(FVector(L, W, 0 + ((Dimensions.Z / 2)+7))); //2
+	Vertices.Add(FVector(-L, W, 0 + ((Dimensions.Z / 2)+7))); //3
+
+	//front
+	Vertices.Add(FVector(-L, W, 0 + ((Dimensions.Z / 2)+7)));//4
+	Vertices.Add(FVector(0, 0, H + ((Dimensions.Z / 2)+7))); //5
+	Vertices.Add(FVector(-L, -W, 0 + ((Dimensions.Z / 2)+7))); //6
+
+	//left
+	Vertices.Add(FVector(-L, -W, 0 + ((Dimensions.Z / 2)+7))); //7
+	Vertices.Add(FVector(0, 0, H + ((Dimensions.Z / 2)+7))); //8
+	Vertices.Add(FVector(L, -W, 0 + ((Dimensions.Z / 2)+7)));//9
+
+	//back
+	Vertices.Add(FVector(L, -W, 0 + ((Dimensions.Z / 2)+7))); //10
+	Vertices.Add(FVector(0, 0, H + ((Dimensions.Z / 2)+7))); //11
+	Vertices.Add(FVector(L, W, 0 + ((Dimensions.Z / 2)+7)));//12
+
+	//right
+	Vertices.Add(FVector(L, W, 0 + ((Dimensions.Z / 2)+7))); //13
+	Vertices.Add(FVector(0, 0, H + ((Dimensions.Z / 2)+7))); //14
+	Vertices.Add(FVector(-L, W, 0 + ((Dimensions.Z / 2)+7)));//15
+	// Triangles
+
+	TArray<int32> Triangles = { 0,3,1, 1,3,2 ,4,5,6,7,8,9,10,11,12,13,14,15 };
+
+	TArray<FVector2D>  UVs = { FVector2D(0,0), FVector2D(0,1), FVector2D(1,1), FVector2D(1,0),
+			FVector2D(1,1),FVector2D(0,0.5),FVector2D(0,0),
+			FVector2D(1,1),FVector2D(0,0.5),FVector2D(0,0),
+			FVector2D(1,1),FVector2D(0,0.5),FVector2D(0,0),
+			FVector2D(1,1),FVector2D(0,0.5),FVector2D(0,0),
+	};
+
+	ProceduralMeshRoot->CreateMeshSection_LinearColor(5, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+	/*ProceduralMeshCap->SetRelativeLocation({ 0,0,Dimensions.Z / 2 });*/
+
+	ProceduralMeshRoot->SetMaterial(5, Material); 
+
+}
+
 
 void AVerticalRailActor::GenerateCubePyramid(const FVector& Dimensions)
 {
@@ -573,59 +624,87 @@ void AVerticalRailActor::GenerateCubePyramid(const FVector& Dimensions)
 }
 
 
-void AVerticalRailActor::GenerateSphere(float Radius, int LatitudeSegments, int LongitudeSegments)
+void AVerticalRailActor::GenerateSphere(float Radius, int32 Segments, int32 Rings)
 {
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FVector2D> UVs;
 	TArray<FProcMeshTangent> Tangents;
+	TArray<FLinearColor> Colors;
 
-	// Generate vertices and triangles
-	for (int32 lat = 0; lat <= LatitudeSegments; ++lat)
+	for (int r = 0; r < Rings; ++r)
 	{
-		float theta = lat * PI / LatitudeSegments;
-		float sinTheta = FMath::Sin(theta);
-		float cosTheta = FMath::Cos(theta);
-
-		for (int32 lon = 0; lon <= LongitudeSegments; ++lon)
+		float phi = PI * r / (Rings + 1);
+		for (int s = 0; s < Segments; ++s)
 		{
-			float phi = lon * 2 * PI / LongitudeSegments;
-			float sinPhi = FMath::Sin(phi);
-			float cosPhi = FMath::Cos(phi);
+			float theta = 2 * PI * s / Segments;
+			FVector pos = FVector(Radius * FMath::Sin(phi) * FMath::Cos(theta), Radius * FMath::Sin(phi) * FMath::Sin(theta), Radius * FMath::Cos(phi) + (Dimentions.Z / 2) + Radius + 4);
+			Vertices.Add(pos);
+			Normals.Add(pos.GetSafeNormal());
+			UVs.Add(FVector2D(s / (float)Segments, r / (float)(Rings + 1)));
+			FVector tangent = FVector(-FMath::Sin(theta), FMath::Cos(theta), 0).GetSafeNormal();
+			Tangents.Add(FProcMeshTangent(tangent, false));
+			Colors.Add(FLinearColor(1, 1, 1, 1));
 
-			FVector vertex = FVector(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta )* Radius;
-			vertex.Z = vertex.Z + (Dimentions.Z / 2) + Radius+2;
-
-			Vertices.Add(vertex);
-
-			FVector normal = vertex.GetSafeNormal();
-			Normals.Add(normal);
-
-			FVector2D uv = FVector2D((float)lon / LongitudeSegments, (float)lat / LatitudeSegments);
-			UVs.Add(uv);
-
-			FVector tangentX = FVector(-sinPhi, cosPhi, 0).GetSafeNormal();
-			Tangents.Add(FProcMeshTangent(tangentX, false));
-
-			// Generate triangles
-			if (lat < LatitudeSegments && lon < LongitudeSegments)
-			{
-				int32 first = (lat * (LongitudeSegments + 1)) + lon;
-				int32 second = first + LongitudeSegments + 1;
-
-				Triangles.Add(first);
-				Triangles.Add(second);
-				Triangles.Add(first + 1);
-
-				Triangles.Add(second);
-				Triangles.Add(second + 1);
-				Triangles.Add(first + 1);
+			// We only add extra vertices at the seam on the first ring iteration
+			if (s == Segments) {
+				// Duplicate the first vertex of each ring at the seam for seamless UVs
+				Vertices.Add(Vertices[1 + (r - 1) * (Segments + 1)]);
+				Normals.Add(Normals[1 + (r - 1) * (Segments + 1)]);
+				UVs.Add(FVector2D(1.f, (float)r / (Rings + 1)));
+				Tangents.Add(Tangents[1 + (r - 1) * (Segments + 1)]);
+				Colors.Add(FLinearColor(1, 1, 1, 1));
 			}
 		}
 	}
 
+	// Bottom vertex
+	Vertices.Add(FVector(0, 0, -Radius));
+	Normals.Add(FVector(0, 0, -1));
+	UVs.Add(FVector2D(0.5f, 1));
+	Tangents.Add(FProcMeshTangent(FVector(1, 0, 0), false));
+	Colors.Add(FLinearColor(1, 1, 1, 1));
 
+	// Top Cap
+	for (int s = 0; s < Segments; ++s)
+	{
+		Triangles.Add(0);
+		Triangles.Add(1 + s);
+		Triangles.Add(1 + (s + 1) % Segments);
+	}
+
+	// Body
+	for (int r = 0; r < Rings; ++r)
+	{
+		for (int s = 0; s < Segments; ++s)
+		{
+			int current = 1 + r * Segments + s;
+			int next = current + 1;
+			if (s == Segments - 1) next = 1 + r * Segments;  // Wrap around
+
+			int below = current + Segments;
+			int belowNext = next + Segments;
+
+			Triangles.Add(current);
+			Triangles.Add(next);
+			Triangles.Add(belowNext);
+
+			Triangles.Add(current);
+			Triangles.Add(belowNext);
+			Triangles.Add(below);
+		}
+	}
+
+	// Bottom Cap
+	int bottomIndex = Vertices.Num() - 1;
+	int firstOfLastRing = 1 + (Rings - 1) * Segments;
+	for (int s = 0; s < Segments; ++s)
+	{
+		Triangles.Add(bottomIndex);
+		Triangles.Add(firstOfLastRing + (s + 1) % Segments);
+		Triangles.Add(firstOfLastRing + s);
+	}
 	// Create the mesh section
 	ProceduralMeshRoot->CreateMeshSection_LinearColor(1, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
 	/*ProceduralMeshCap->SetRelativeLocation({ 0,0,Dimensions.Z / 2 });*/
@@ -633,6 +712,8 @@ void AVerticalRailActor::GenerateSphere(float Radius, int LatitudeSegments, int 
 	ProceduralMeshRoot->SetMaterial(1, Material);
 
 }
+
+
 
 void AVerticalRailActor::GenerateEgg(float Radius, int LatitudeSegments, int LongitudeSegments)
 {

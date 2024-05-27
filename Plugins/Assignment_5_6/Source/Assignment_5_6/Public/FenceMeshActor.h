@@ -11,7 +11,7 @@
 USTRUCT(BlueprintType)
 struct FFenceProperties {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, meta = (ClampMax = "100.0"))
+	UPROPERTY(EditAnywhere)
 	float length;
 	UPROPERTY(EditAnywhere)
 	float width;
@@ -21,8 +21,8 @@ struct FFenceProperties {
 	float spacing;
 
 	FFenceProperties()
-		: length(0.0f)
-		, width(100.0f)
+		: length(10.0f)
+		, width(10.0f)
 		, height(100.0f)
 		, spacing(50.0f){}
 
@@ -43,9 +43,17 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void ClearStaticFenceComponents();
+
+	void AddStaticFenceComponents();
+
+	void ReplaceStaticMeshesWithProceduralMesh();
 	
 
 	virtual void OnConstruction(const FTransform& Transform) override;
+
+	void OnConstructionProcedural();
 
 
 public:	
@@ -58,6 +66,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	TSubclassOf<AVerticalRailActor>  VerticalRailActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
+	UStaticMesh*  StaticVerticalRailActor;
+
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	int SplinePoints;
 
@@ -65,6 +76,9 @@ public:
 
 	UPROPERTY()
 	USceneComponent* SceneComponent;
+
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> StaticVerticalRailArr;
 
 	UPROPERTY()
 	TArray<AVerticalRailActor*> VerticalRailArr;

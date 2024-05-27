@@ -36,7 +36,7 @@ public:
 	UStaticMesh* StaticMesh;
 
 	UPROPERTY(EditAnywhere)
-	UMaterial* SplineMaterial;
+	UMaterialInterface* SplineMaterial;
 
 
 

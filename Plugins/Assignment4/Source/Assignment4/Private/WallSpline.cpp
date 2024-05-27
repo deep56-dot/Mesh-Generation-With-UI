@@ -24,7 +24,7 @@ AWallSpline::AWallSpline()
 		StaticMesh = MeshAsset.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Script/Engine.Material'/Game/StarterContent/Materials/M_Concrete_Grime.M_Concrete_Grime'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> Material(TEXT("/Script/Engine.Material'/Game/StarterContent/Materials/M_Concrete_Grime.M_Concrete_Grime'"));
 
 	if (Material.Succeeded())
 	{
@@ -110,7 +110,7 @@ void AWallSpline::GenerateWall()
 
 			SplineMesh->SetMobility(EComponentMobility::Movable);
 			SplineMesh->SetStaticMesh(StaticMesh);
-			//SplineMesh->SetMaterial(0, SplineMaterial);
+			SplineMesh->SetMaterial(0, SplineMaterial);
 			SplineMesh->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
 
 			SplineMesh->SetupAttachment(SplineComponent);

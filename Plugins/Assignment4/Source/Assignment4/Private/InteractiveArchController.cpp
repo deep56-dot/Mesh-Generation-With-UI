@@ -379,27 +379,29 @@ void AInteractiveArchController::OnLeftClick(const FInputActionValue& ActionValu
         if (CurrWall < WallSplineArr.Num())
         {
             WallSplineArr[CurrWall]->SetPointLocation(ClickLocation);
-        }
-        if (WallSplineArr[CurrWall]->SpileArr.Num() == 1)
+            if (WallSplineArr[CurrWall]->SpileArr.Num() == 1)
             WallConstructionDelegate.ExecuteIfBound("Construction Statrted");
+        }
         
     }
 }
 
 void AInteractiveArchController::OnRightClick(const FInputActionValue& ActionValue)
 {
-    if (WallSplineArr[CurrWall]->NoOfSplinePoints > 0) {
-        AWallSpline* WallObj = NewObject<AWallSpline>(this);
-        WallSplineArr.Add(WallObj);
-        CurrWall = WallSplineArr.Num() - 1;
+    if (CurrWall < WallSplineArr.Num()) {
+        if (WallSplineArr[CurrWall]->NoOfSplinePoints > 0) {
+            AWallSpline* WallObj = NewObject<AWallSpline>(this);
+            WallSplineArr.Add(WallObj);
+            CurrWall = WallSplineArr.Num() - 1;
 
-        WallConstructionDelegate.ExecuteIfBound(FString("Construction Completed"));
+            WallConstructionDelegate.ExecuteIfBound(FString("Construction Completed"));
+        }
     }
 }
 
 void AInteractiveArchController::Undo(const FInputActionValue& ActionValue)
 {
-    if (CurrWall >= WallSplineArr.Num() - 1) {
+    if (CurrWall >= WallSplineArr.Num() - 1 && CurrWall!=0) {
         CurrWall = WallSplineArr.Num() - 1;
     }
     if (WallSplineArr.Num()) {

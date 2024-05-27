@@ -9,11 +9,13 @@
 
 UENUM()
 enum class ETypeOfRail {
-	Sphere,
-	Pyramid,
-	Egg,
-	Windsor,
-	Extra
+	WindsorTurnedCapital,
+	RoundTurnedCapital,
+	ACornCapital,
+	GothicStarTop,
+	RoundedOverTop,
+	RoundedStarTop,
+	PyramidTop
 };
 UCLASS()
 class ASSIGNMENT_5_6_API AVerticalRailActor : public AActor
@@ -42,6 +44,8 @@ public:
 
 	void GeneratePyramid(FVector Dimensions);
 
+	void GeneratePyramidOverSphere(FVector Dimensions);
+
 
 
 	void GenerateCubePyramid(const FVector& Dimensions);
@@ -61,9 +65,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	UProceduralMeshComponent* ProceduralMeshRoot;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
-	UProceduralMeshComponent* ProceduralMeshCap;
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	TArray<FVector> Normals;
