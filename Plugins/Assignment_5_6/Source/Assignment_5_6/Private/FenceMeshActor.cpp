@@ -13,7 +13,7 @@ AFenceMeshActor::AFenceMeshActor()
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	SplineComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
-
+	
 }
 
 
@@ -42,15 +42,19 @@ void AFenceMeshActor::AddStaticFenceComponents()
 		SplineComponent->SetSplinePointType(i, ESplinePointType::Linear);
 	}
 
-	const int VerticalMeshLength = (FenceProperties.length * 10)/100 + FenceProperties.spacing;
+	const float VerticalMeshLength = FenceProperties.length  + FenceProperties.spacing;
 
 	const float NumberOfVerticalFences = FMath::Floor(SplineLength / VerticalMeshLength);
+
+
+	
+		UE_LOG(LogTemp, Warning, TEXT("Spline length %f and mesh length %f"), SplineLength, VerticalMeshLength);
 
 	for (int32 i{}; i < NumberOfVerticalFences; ++i)
 	{
 		 FVector Location = SplineComponent->GetLocationAtDistanceAlongSpline(i * VerticalMeshLength, ESplineCoordinateSpace::World);
-		 Location.Z = Location.Z + (FenceProperties.height / 2);
-		
+		 Location.Z = Location.Z + (FenceProperties.height*10 / 2);
+		 Location = Location + i* FVector{ 0.01,0.01,0.01 };
 		FRotator Rotation = SplineComponent->GetRotationAtDistanceAlongSpline(i * VerticalMeshLength, ESplineCoordinateSpace::World);
 
 		UStaticMeshComponent* VerticalRailMesh = NewObject<UStaticMeshComponent>(this);
@@ -60,8 +64,9 @@ void AFenceMeshActor::AddStaticFenceComponents()
 		VerticalRailMesh->SetWorldLocationAndRotation(Location, Rotation);
 
 		VerticalRailMesh->SetStaticMesh(StaticVerticalRailActor);
+		VerticalRailMesh->SetMaterial(0, FenceMaterial);
 
-		VerticalRailMesh->SetRelativeScale3D({ FenceProperties.length / 10, FenceProperties.width / 10, FenceProperties.height / 100 });
+		VerticalRailMesh->SetRelativeScale3D({ FenceProperties.length / 10, FenceProperties.width / 10, FenceProperties.height / 10 });
 
 		VerticalRailMesh->RegisterComponent();
 
@@ -82,10 +87,32 @@ void AFenceMeshActor::ReplaceStaticMeshesWithProceduralMesh()
 			FRotator Rotation = MeshComponent->GetComponentRotation();
 			auto VerticalRail = GetWorld()->SpawnActor<AVerticalRailActor>(VerticalRailActor, Location, Rotation);
 
-			VerticalRail->SetActorRelativeScale3D({ FenceProperties.length / 10, FenceProperties.width / 10, FenceProperties.height / 100 });
 			if (VerticalRail)
 			{
+			    VerticalRail->SetActorRelativeScale3D({ FenceProperties.length / 10, FenceProperties.width / 10, FenceProperties.height / 10 });
 				VerticalRail->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+				UMaterialInstanceDynamic* VerticalDynamicMaterial = UMaterialInstanceDynamic::Create(FenceMaterial, this);
+				if (VerticalDynamicMaterial) {
+					float TileX =FenceProperties.length/20;
+					float TileY = FenceProperties.height/4;
+
+					VerticalDynamicMaterial->SetScalarParameterValue("TileX", TileX);
+					VerticalDynamicMaterial->SetScalarParameterValue("TileY", TileY);
+					VerticalRail->SetMaterial(0,VerticalDynamicMaterial);
+				}
+
+				UMaterialInstanceDynamic* HorizontalDynamicMaterial = UMaterialInstanceDynamic::Create(FenceMaterial, this);
+				if (HorizontalDynamicMaterial) {
+					float TileX = FenceProperties.length /4;
+					float TileY = FenceProperties.height /20;
+					
+					HorizontalDynamicMaterial->SetScalarParameterValue("TileX", TileX);
+					HorizontalDynamicMaterial->SetScalarParameterValue("TileY", TileY);
+					VerticalRail->SetMaterial(1, HorizontalDynamicMaterial);
+					VerticalRail->SetMaterial(2, HorizontalDynamicMaterial);
+
+				}
 			}
 		}
 	}
@@ -100,9 +127,43 @@ void AFenceMeshActor::BeginPlay()
 	Super::BeginPlay();
 	ReplaceStaticMeshesWithProceduralMesh();
 }
+void AFenceMeshActor::SelectStaticRail()
+{
+	if (StaticRailType == ETypeOfStaticRail::RoundTurnedCapital)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_RoundTurnedCapital.SM_RoundTurnedCapital'"));
+	}
+	else if (StaticRailType == ETypeOfStaticRail::GothicStarTop)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_GothicOverTop.SM_GothicOverTop'"));
+	}
+	else if (StaticRailType == ETypeOfStaticRail::ACornCapital)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_ACornCapital.SM_ACornCapital'"));
+	}
+	else if (StaticRailType == ETypeOfStaticRail::PyramidTop)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_PyramidTop.SM_PyramidTop'"));
+	}
+	else if (StaticRailType == ETypeOfStaticRail::WindsorTurnedCapital)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_WindsorTurnedCapital.SM_WindsorTurnedCapital'"));
+	}
+	else if (StaticRailType == ETypeOfStaticRail::RoundedOverTop)
+	{
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_RoundOverTop.SM_RoundOverTop'"));
+	}
+	else {
+		StaticVerticalRailActor = LoadObject<UStaticMesh>(nullptr, TEXT("/Script/Engine.StaticMesh'/Assignment_5_6/StaticMesh/SM_RoundTurnedCapital.SM_RoundTurnedCapital'"));
+	}
+
+}
 void AFenceMeshActor::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+
+	SelectStaticRail();
+	FenceProperties.ClampValues();
 	/*generate static mesh on comnstruction and replace with procedural mesh in begin play*/
 	ClearStaticFenceComponents();
 	AddStaticFenceComponents();

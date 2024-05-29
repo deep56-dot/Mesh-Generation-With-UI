@@ -50,9 +50,12 @@ public:
 
 	void GenerateCubePyramid(const FVector& Dimensions);
 
+	void SetMaterial(int Section,UMaterialInterface* Material);
+
 protected:
-	void GenerateSphere(float Radius, int LatitudeSegments, int LongitudeSegments);
+	void GenerateSphere(float Radius, int32 Segments, int32 Rings);
 	void GenerateEgg(float Radius, int LatitudeSegments, int LongitudeSegments);
+	void CreateSemiDisk(float Radius, float Width,FVector Offset);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -66,14 +69,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	UProceduralMeshComponent* ProceduralMeshRoot;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
-	TArray<FVector> Normals;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
-	TArray<FVector2D>  UVs;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
-	TArray<FProcMeshTangent>  Tangents;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	UMaterial* Material;

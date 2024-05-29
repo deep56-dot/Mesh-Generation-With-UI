@@ -8,6 +8,16 @@
 #include <Components/SplineComponent.h>
 #include "FenceMeshActor.generated.h"
 
+UENUM()
+enum class ETypeOfStaticRail {
+	WindsorTurnedCapital,
+	RoundTurnedCapital,
+	ACornCapital,
+	GothicStarTop,
+	RoundedOverTop,
+	RoundedStarTop,
+	PyramidTop
+};
 USTRUCT(BlueprintType)
 struct FFenceProperties {
 	GENERATED_BODY()
@@ -23,12 +33,12 @@ struct FFenceProperties {
 	FFenceProperties()
 		: length(10.0f)
 		, width(10.0f)
-		, height(100.0f)
-		, spacing(50.0f){}
+		, height(10.0f)
+		, spacing(20.0f){}
 
 	void ClampValues()
 	{
-		spacing = FMath::Clamp(spacing,20, height);
+		spacing = FMath::Clamp(spacing,20, length*5);
 	}
 };
 UCLASS()
@@ -55,7 +65,7 @@ protected:
 
 	void OnConstructionProcedural();
 
-
+	void SelectStaticRail();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -66,8 +76,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	TSubclassOf<AVerticalRailActor>  VerticalRailActor;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	UStaticMesh*  StaticVerticalRailActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
+	UMaterialInterface* FenceMaterial;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
 	int SplinePoints;
@@ -86,4 +99,7 @@ public:
 
 	UPROPERTY()
 	USplineComponent* SplineComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProcMesh")
+	ETypeOfStaticRail StaticRailType;
 };

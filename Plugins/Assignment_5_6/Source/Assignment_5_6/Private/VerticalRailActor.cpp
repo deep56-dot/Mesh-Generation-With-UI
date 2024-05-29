@@ -2,6 +2,7 @@
 
 
 #include "VerticalRailActor.h"
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 AVerticalRailActor::AVerticalRailActor() : Dimentions{ FVector(10,10,100) }
@@ -38,6 +39,7 @@ void AVerticalRailActor::OnConstruction(const FTransform& Transform)
 	}
 	else if (RailingType == ETypeOfRail::PyramidTop)
 	{
+		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 1, Dimentions.Y / 8, 1, 10, 10);
 		GenerateCubePyramid(Dimentions);
 
 	}
@@ -48,6 +50,13 @@ void AVerticalRailActor::OnConstruction(const FTransform& Transform)
 		GeneratePyramidOverSphere(Dimentions);
 		GenerateSphere(Dimentions.X / 2, 32, 32);
 		
+	}
+	else if (RailingType == ETypeOfRail::RoundedOverTop)
+	{
+
+		GenerateBellShape(FVector(0, 0, Dimentions.Z / 2), Dimentions.Y / 4, 1, Dimentions.Y / 8, 1, 10, 10);
+		CreateSemiDisk(Dimentions.X / 2, Dimentions.Y , FVector(0, 0, Dimentions.Z / 2+1));
+
 	}
 }
 
@@ -233,44 +242,44 @@ void AVerticalRailActor::GenerateTopHorizontalRail(FVector Dimensions)
 	TArray<FVector> Vertices;
 
 	float L = Dimentions.Z/ 2.0f;
-	float W = Dimensions.Y/ 2.0f;
+	float W = Dimensions.Y/ 4.0f;
 	float H = 7;
 
 	//Front Face
-	Vertices.Add(FVector(-L, -W, -H + (Dimensions.Z / 4))); //0
-	Vertices.Add(FVector(-L, W, -H + (Dimensions.Z / 4))); //1
-	Vertices.Add(FVector(-L, W, H + (Dimensions.Z / 4))); //2
-	Vertices.Add(FVector(-L, -W, H + (Dimensions.Z / 4))); //3
+	Vertices.Add(FVector(-L, -W+5, -H + (Dimensions.Z / 4))); //0
+	Vertices.Add(FVector(-L, W+5, -H + (Dimensions.Z / 4))); //1
+	Vertices.Add(FVector(-L, W+5, H + (Dimensions.Z / 4))); //2
+	Vertices.Add(FVector(-L, -W+5, H + (Dimensions.Z / 4))); //3
 
 	//Bottom Face
-	Vertices.Add(FVector(-L, -W, -H + (Dimensions.Z / 4))); //4
-	Vertices.Add(FVector(L, -W, -H + (Dimensions.Z / 4)));  //5
-	Vertices.Add(FVector(L, W, -H + (Dimensions.Z / 4)));   //6
-	Vertices.Add(FVector(-L, W, -H + (Dimensions.Z / 4)));  //7
+	Vertices.Add(FVector(-L, -W+5, -H + (Dimensions.Z / 4))); //4
+	Vertices.Add(FVector(L, -W+5, -H + (Dimensions.Z / 4)));  //5
+	Vertices.Add(FVector(L, W+5, -H + (Dimensions.Z / 4)));   //6
+	Vertices.Add(FVector(-L, W+5, -H + (Dimensions.Z / 4)));  //7
 
 	//Back Face
-	Vertices.Add(FVector(L, -W, -H + (Dimensions.Z / 4))); //8
-	Vertices.Add(FVector(L, -W, H + (Dimensions.Z / 4))); //9
-	Vertices.Add(FVector(L, W, H + (Dimensions.Z / 4))); //10
-	Vertices.Add(FVector(L, W, -H + (Dimensions.Z / 4))); //11
+	Vertices.Add(FVector(L, -W+5, -H + (Dimensions.Z / 4))); //8
+	Vertices.Add(FVector(L, -W+5, H + (Dimensions.Z / 4))); //9
+	Vertices.Add(FVector(L, W+5, H + (Dimensions.Z / 4))); //10
+	Vertices.Add(FVector(L, W+5, -H + (Dimensions.Z / 4))); //11
 
 	//Top Face
-	Vertices.Add(FVector(L, -W, H + (Dimensions.Z / 4))); //12
-	Vertices.Add(FVector(-L, -W, H + (Dimensions.Z / 4))); //13
-	Vertices.Add(FVector(-L, W, H + (Dimensions.Z / 4)));  //14
-	Vertices.Add(FVector(L, W, H + (Dimensions.Z / 4)));  //15
+	Vertices.Add(FVector(L, -W+5, H + (Dimensions.Z / 4))); //12
+	Vertices.Add(FVector(-L, -W+5, H + (Dimensions.Z / 4))); //13
+	Vertices.Add(FVector(-L, W+5, H + (Dimensions.Z / 4)));  //14
+	Vertices.Add(FVector(L, W+5, H + (Dimensions.Z / 4)));  //15
 
 	//Left Face
-	Vertices.Add(FVector(-L, -W, H + (Dimensions.Z / 4))); //16
-	Vertices.Add(FVector(L, -W, H + (Dimensions.Z / 4))); //17
-	Vertices.Add(FVector(L, -W, -H + (Dimensions.Z / 4))); //18
-	Vertices.Add(FVector(-L, -W, -H + (Dimensions.Z / 4))); //19
+	Vertices.Add(FVector(-L, -W+5, H + (Dimensions.Z / 4))); //16
+	Vertices.Add(FVector(L, -W+5, H + (Dimensions.Z / 4))); //17
+	Vertices.Add(FVector(L, -W+5, -H + (Dimensions.Z / 4))); //18
+	Vertices.Add(FVector(-L, -W+5, -H + (Dimensions.Z / 4))); //19
    
 	//Right Face
-	Vertices.Add(FVector(-L, W, H + (Dimensions.Z / 4))); //20
-	Vertices.Add(FVector(-L, W, -H + (Dimensions.Z / 4))); //21 
-	Vertices.Add(FVector(L, W, -H + (Dimensions.Z / 4))); //22
-	Vertices.Add(FVector(L, W, H + (Dimensions.Z / 4))); //23
+	Vertices.Add(FVector(-L, W+5, H + (Dimensions.Z / 4))); //20
+	Vertices.Add(FVector(-L, W+5, -H + (Dimensions.Z / 4))); //21 
+	Vertices.Add(FVector(L, W+5, -H + (Dimensions.Z / 4))); //22
+	Vertices.Add(FVector(L, W+5, H + (Dimensions.Z / 4))); //23
 
 	// Triangles
 
@@ -297,44 +306,44 @@ void AVerticalRailActor::GenerateBottomHorizontalRail(FVector Dimensions)
 	TArray<FVector> Vertices;
 
 	float L = Dimensions.Z / 2.0f;
-	float W = Dimensions.Y / 2.0f;
+	float W = Dimensions.Y / 4.0f;
 	float H = 7;
 
 	//Front Face
-	Vertices.Add(FVector(-L, -W, -H + (-Dimensions.Z / 4))); //0
-	Vertices.Add(FVector(-L, W, -H + (-Dimensions.Z / 4))); //1
-	Vertices.Add(FVector(-L, W, H + (-Dimensions.Z / 4))); //2
-	Vertices.Add(FVector(-L, -W, H + (-Dimensions.Z / 4))); //3
+	Vertices.Add(FVector(-L, -W+5, -H + (-Dimensions.Z / 4))); //0
+	Vertices.Add(FVector(-L, W+5, -H + (-Dimensions.Z / 4))); //1
+	Vertices.Add(FVector(-L, W+5, H + (-Dimensions.Z / 4))); //2
+	Vertices.Add(FVector(-L, -W+5, H + (-Dimensions.Z / 4))); //3
 	
 	//Bottom Face
-	Vertices.Add(FVector(-L, -W, -H + (-Dimensions.Z / 4))); //4
-	Vertices.Add(FVector(L, -W, -H + (-Dimensions.Z / 4)));  //5
-	Vertices.Add(FVector(L, W, -H + (-Dimensions.Z / 4)));   //6
-	Vertices.Add(FVector(-L, W, -H + (-Dimensions.Z / 4)));  //7
+	Vertices.Add(FVector(-L, -W+5, -H + (-Dimensions.Z / 4))); //4
+	Vertices.Add(FVector(L, -W+5, -H + (-Dimensions.Z / 4)));  //5
+	Vertices.Add(FVector(L, W+5, -H + (-Dimensions.Z / 4)));   //6
+	Vertices.Add(FVector(-L, W+5, -H + (-Dimensions.Z / 4)));  //7
 
 	//Back Face
-	Vertices.Add(FVector(L, -W, -H + (-Dimensions.Z / 4))); //8
-	Vertices.Add(FVector(L, -W, H + (-Dimensions.Z / 4))); //9
-	Vertices.Add(FVector(L, W, H + (-Dimensions.Z / 4))); //10
-	Vertices.Add(FVector(L, W, -H + (-Dimensions.Z / 4))); //11
+	Vertices.Add(FVector(L, -W+5, -H + (-Dimensions.Z / 4))); //8
+	Vertices.Add(FVector(L, -W+5, H + (-Dimensions.Z / 4))); //9
+	Vertices.Add(FVector(L, W+5, H + (-Dimensions.Z / 4))); //10
+	Vertices.Add(FVector(L, W+5, -H + (-Dimensions.Z / 4))); //11
 
 	//Top Face
-	Vertices.Add(FVector(L, -W, H + (-Dimensions.Z / 4))); //12
-	Vertices.Add(FVector(-L, -W, H + (-Dimensions.Z / 4))); //13
-	Vertices.Add(FVector(-L, W, H + (-Dimensions.Z / 4)));  //14
-	Vertices.Add(FVector(L, W, H + (-Dimensions.Z / 4)));  //15
+	Vertices.Add(FVector(L, -W+5, H + (-Dimensions.Z / 4))); //12
+	Vertices.Add(FVector(-L, -W+5, H + (-Dimensions.Z / 4))); //13
+	Vertices.Add(FVector(-L, W+5, H + (-Dimensions.Z / 4)));  //14
+	Vertices.Add(FVector(L, W+5, H + (-Dimensions.Z / 4)));  //15
 
 	//Left Face
-	Vertices.Add(FVector(-L, -W, H + (-Dimensions.Z / 4))); //16
-	Vertices.Add(FVector(L, -W, H + (-Dimensions.Z / 4))); //17
-	Vertices.Add(FVector(L, -W, -H + (-Dimensions.Z / 4))); //18
-	Vertices.Add(FVector(-L, -W, -H + (-Dimensions.Z / 4))); //19
+	Vertices.Add(FVector(-L, -W+5, H + (-Dimensions.Z / 4))); //16
+	Vertices.Add(FVector(L, -W+5, H + (-Dimensions.Z / 4))); //17
+	Vertices.Add(FVector(L, -W+5, -H + (-Dimensions.Z / 4))); //18
+	Vertices.Add(FVector(-L, -W+5, -H + (-Dimensions.Z / 4))); //19
 
 	//Right Face
-	Vertices.Add(FVector(-L, W, H + (-Dimensions.Z / 4))); //20
-	Vertices.Add(FVector(-L, W, -H + (-Dimensions.Z / 4))); //21 
-	Vertices.Add(FVector(L, W, -H + (-Dimensions.Z / 4))); //22
-	Vertices.Add(FVector(L, W, H + (-Dimensions.Z / 4))); //23
+	Vertices.Add(FVector(-L, W+5, H + (-Dimensions.Z / 4))); //20
+	Vertices.Add(FVector(-L, W+5, -H + (-Dimensions.Z / 4))); //21 
+	Vertices.Add(FVector(L, W+5, -H + (-Dimensions.Z / 4))); //22
+	Vertices.Add(FVector(L, W+5, H + (-Dimensions.Z / 4))); //23
 
 	// Triangles
 
@@ -515,7 +524,7 @@ void AVerticalRailActor::GeneratePyramidOverSphere(FVector Dimensions)
 
 void AVerticalRailActor::GenerateCubePyramid(const FVector& Dimensions)
 {
-	FVector Dim{ 15,15,10 };
+	FVector Dim{ 10,10,10 };
 	TArray<FVector> Vertices;
 
 	// Bottom Face
@@ -621,6 +630,16 @@ void AVerticalRailActor::GenerateCubePyramid(const FVector& Dimensions)
 
 
 	ProceduralMeshRoot->SetMaterial(1, Material);
+}
+
+void AVerticalRailActor::SetMaterial(int Section,UMaterialInterface* MyMaterial)
+{
+	ProceduralMeshRoot->SetMaterial(Section, MyMaterial);
+
+	ProceduralMeshRoot->SetMaterial(3, MyMaterial);
+	ProceduralMeshRoot->SetMaterial(4, MyMaterial);
+	ProceduralMeshRoot->SetMaterial(5, MyMaterial);
+
 }
 
 
@@ -737,7 +756,7 @@ void AVerticalRailActor::GenerateEgg(float Radius, int LatitudeSegments, int Lon
 			float sinPhi = FMath::Sin(phi);
 			float cosPhi = FMath::Cos(phi);
 
-			FVector vertex = FVector(cosPhi * sinTheta * Radius, sinPhi * sinTheta * Radius, cosTheta * (Radius+(Radius/2)));
+			FVector vertex = FVector(cosPhi * sinTheta * Radius, sinPhi * sinTheta * Radius, cosTheta * (Radius+(Radius/1.5)));
 			vertex.Z = vertex.Z + (Dimentions.Z / 2) + Radius + 2;
 
 			Vertices.Add(vertex);
@@ -773,6 +792,177 @@ void AVerticalRailActor::GenerateEgg(float Radius, int LatitudeSegments, int Lon
 	ProceduralMeshRoot->CreateMeshSection_LinearColor(1, Vertices, Triangles, TArray<FVector>(), UVs, TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
 	/*ProceduralMeshCap->SetRelativeLocation({ 0,0,Dimensions.Z / 2 });*/
 
+	ProceduralMeshRoot->SetMaterial(1, Material);
+}
+
+void AVerticalRailActor::CreateSemiDisk(float Radius, float Width, FVector Offset)
+{
+
+	//Mesh->ClearAllMeshSections();
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
+	TArray<FLinearColor> VertexColors;
+
+	// Calculate points for semicircles
+	const int32 NumSegments = 20; // Number of segments in the semicircle
+	const float DeltaTheta = 180.0f / (NumSegments - 1);
+
+	Vertices.Add(FVector{ 0,0,0 } + Offset);
+	Vertices.Add(FVector{ 0,  Width / 2,0 } + Offset);
+	Vertices.Add(FVector{ 0,-Width / 2,0 } + Offset);
+
+	UVs.Add(FVector2D(0.5f, 0.5f)); // Center
+	UVs.Add(FVector2D(0.5f, 0.5f)); // Top middle (on front)
+	UVs.Add(FVector2D(0.5f, 0.0f)); // Top middle (on back)
+
+
+	// Top vertices of the semicircles
+	for (int32 i = 0; i < NumSegments; i++)
+	{
+		float AngleRad = FMath::DegreesToRadians(i * DeltaTheta);
+		float X = Radius * FMath::Cos(AngleRad);
+		float Z = Radius * FMath::Sin(AngleRad);
+
+		// Vertices on Front
+		Vertices.Add(FVector(X, Width / 2, Z) + Offset);
+
+		// Vertices on Back
+		Vertices.Add(FVector(X, -Width / 2, Z) + Offset);
+
+
+		// Compute UVs for each vertex
+		float U = 0.5f + (X / (2 * Radius)); // Normalize X to [0, 1]
+		float V_Front = 0.5f + (Z / (2 * Radius)); // Normalize Z to [0, 1] for front
+		float V_Back = 0.5f - (Z / (2 * Radius)); // Normalize Z to [0, 1] for back
+
+		UVs.Add(FVector2D(U, V_Front)); // UV for front vertices
+		UVs.Add(FVector2D(U, V_Back));  // UV for back vertices
+
+
+	}
+
+	// Add triangles for semicircles (front faces)
+	{
+		int32 CurrentVertexIndex = 3;
+
+		for (int32 i = 0; i < NumSegments - 1; i++)
+		{
+			Triangles.Add(1);
+			Triangles.Add(CurrentVertexIndex);
+			Triangles.Add(CurrentVertexIndex + 2);
+			CurrentVertexIndex += 2;
+		}
+	}
+
+
+	// Add triangles for semicircles (Back faces)
+
+	{
+		int32 CurrentVertexIndex = 4;
+
+		for (int32 i = 0; i < NumSegments - 1; i++)
+		{
+			Triangles.Add(2);
+			Triangles.Add(CurrentVertexIndex + 2);
+			Triangles.Add(CurrentVertexIndex);
+			CurrentVertexIndex += 2;
+		}
+	}
+
+
+	Normals.Add({ 0,0,-1 });
+	Normals.Add({ 0,1,0 });
+	Normals.Add({ 0,-1,0 });
+
+
+	// Calculate normals and tangents
+	for (int32 i = 3; i < Vertices.Num(); i++)
+	{
+		if (i % 2 != 0)
+		{
+
+			Normals.Add({ 0,1,0 });
+
+		}
+		else
+		{
+
+			Normals.Add({ 0, -1 ,0 });
+		}
+
+
+	}
+
+
+	{
+		int32 CurrentVertexIndex = 3;
+
+		for (int32 i = 0; i < (NumSegments - 1); i++)
+		{
+			Triangles.Add(CurrentVertexIndex);
+			Triangles.Add(CurrentVertexIndex + 1);
+			Triangles.Add(CurrentVertexIndex + 2);
+
+			Triangles.Add(CurrentVertexIndex + 2);
+			Triangles.Add(CurrentVertexIndex + 1);
+			Triangles.Add(CurrentVertexIndex + 3);
+
+
+			CurrentVertexIndex += 2;
+		}
+	}
+
+
+	auto OldTotalVertices = Vertices.Num();
+
+	for (int32 i = 3; i < OldTotalVertices; ++i)
+	{
+		auto Vertex = Vertices[i];
+		Vertices.Add(Vertex);
+
+		auto UV = UVs[i];
+
+		UVs.Add(UV);
+
+	}
+
+
+	{
+		int32 CurrentVertexIndex = OldTotalVertices;
+
+		for (int32 i = 0; i < OldTotalVertices - 3; i++)
+		{
+			Triangles.Add(CurrentVertexIndex);
+			Triangles.Add(CurrentVertexIndex + 1);
+			Triangles.Add(CurrentVertexIndex + 2);
+
+			Triangles.Add(CurrentVertexIndex + 2);
+			Triangles.Add(CurrentVertexIndex + 1);
+			Triangles.Add(CurrentVertexIndex + 3);
+
+
+			CurrentVertexIndex += 2;
+		}
+	}
+
+
+	{
+		int32 CurrentVertexIndex = OldTotalVertices;
+		// Calculate normals and tangents
+		for (int32 i = 0; i < OldTotalVertices - 3; i++)
+		{
+			Normals.Add(UKismetMathLibrary::GetDirectionUnitVector(Vertices[0], Vertices[CurrentVertexIndex]));
+			CurrentVertexIndex++;
+		}
+	}
+
+
+
+	// Create mesh section
+	ProceduralMeshRoot->CreateMeshSection_LinearColor(1, Vertices, Triangles, Normals, UVs, TArray<FLinearColor>(), Tangents, true);
 	ProceduralMeshRoot->SetMaterial(1, Material);
 }
 void AVerticalRailActor::BeginPlay()
