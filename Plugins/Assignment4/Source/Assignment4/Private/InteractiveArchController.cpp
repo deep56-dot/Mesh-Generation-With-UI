@@ -271,15 +271,18 @@ void AInteractiveArchController::Switch() {
         MyWidgetInstance->AddToViewport();
         //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "jausdkhs");
         SubSystem->ClearAllMappings();
+        num--;
+        ChangeView();
         SubSystem->AddMappingContext(SplineMappingContext, 0);
         SubSystem->AddMappingContext(CameraMapping, 0);
     }
     else {
         bAssignment3 = false;
-
         MyWidgetInstance->RemoveFromViewport();
         SelectionWidgetInstance->AddToViewport();
         SubSystem->ClearAllMappings();
+        num--;
+        ChangeView();
         SubSystem->AddMappingContext(MyMapping, 0);
         SubSystem->AddMappingContext(CameraMapping, 0);
     }
@@ -338,6 +341,10 @@ void AInteractiveArchController::SetTexture(const FTextureData& TextureData)
 
 void AInteractiveArchController::Delete()
 {
+    
+    if (CurrWall >= WallSplineArr.Num() - 1) {
+        CurrWall = WallSplineArr.Num() - 1;
+    }
     if (WallSplineArr.Num() > 0) {
         WallSplineArr[CurrWall]->Destroy();
         WallSplineArr.RemoveAt(CurrWall);
@@ -349,9 +356,6 @@ void AInteractiveArchController::Delete()
         CurrWall = WallSplineArr.Num() - 1;
         WallConstructionDelegate.ExecuteIfBound(FString("Current Wall Deleted"));
 
-    }
-    if (CurrWall >= WallSplineArr.Num() - 1) {
-        CurrWall = WallSplineArr.Num() - 1;
     }
 
 }
@@ -418,6 +422,7 @@ void AInteractiveArchController::Undo(const FInputActionValue& ActionValue)
     }
     else {
         WallSplineArr.Add(NewObject<AWallSpline>(this));
+        CurrWall = WallSplineArr.Num() - 1;
     }
 }
 
