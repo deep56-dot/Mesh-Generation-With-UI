@@ -54,6 +54,7 @@ public:
 
 protected:
 	void GenerateSphere(float Radius, int32 Segments, int32 Rings);
+	void GenerateCircle(float Radius, int segments);
 	void GenerateEgg(float Radius, int LatitudeSegments, int LongitudeSegments);
 	void CreateSemiDisk(float Radius, float Width,FVector Offset);
 	// Called when the game starts or when spawned

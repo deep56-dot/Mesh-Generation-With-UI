@@ -732,7 +732,18 @@ void AVerticalRailActor::GenerateSphere(float Radius, int32 Segments, int32 Ring
 
 }
 
-
+void AVerticalRailActor::GenerateCircle(float Radius, int segments) { 
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
+	TArray<FLinearColor> Colors;
+	for (int i = 0; i < segments; i++) {
+		float theta = (PI * 2 * i) / segments;
+		Vertices.Add({ Radius * FMath::Cos(theta), Radius * FMath::Sin(theta), Radius });
+	}
+}
 
 void AVerticalRailActor::GenerateEgg(float Radius, int LatitudeSegments, int LongitudeSegments)
 {

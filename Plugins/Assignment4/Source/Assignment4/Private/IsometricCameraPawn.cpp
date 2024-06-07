@@ -12,10 +12,10 @@ AIsometricCameraPawn::AIsometricCameraPawn()
 	SpringArmComponent->SetupAttachment(RootComponent);
 	SpringArmComponent->bEnableCameraLag = true;
 	SpringArmComponent->CameraLagSpeed = 5.f;
-	SpringArmComponent->SetRelativeLocation(FVector(0,0,300));
-	SpringArmComponent->SetRelativeRotation(FRotator(-45.0,45.0f, 0.0f));
-	SpringArmComponent->TargetArmLength = 2000.0f;
-
+	 SpringArmComponent->SetRelativeLocation(FVector(0,0,300));
+	 SpringArmComponent->SetRelativeRotation(FRotator(-45.0,45.0f, 0.0f));
+	SpringArmComponent->TargetArmLength = 2000.0f; 
+	 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	TargetYaw = 45.0f;
