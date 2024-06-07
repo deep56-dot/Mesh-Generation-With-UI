@@ -73,6 +73,7 @@ void FAsyncTaskHandler::DoWork()
 					InstanceTransforms.Add(transform);
 
 					MeshGenerator->AddInstances(CurrentMesh, InstanceTransforms);
+					FPlatformProcess::Sleep(0.01f);
 				}
 
 
@@ -82,7 +83,7 @@ void FAsyncTaskHandler::DoWork()
 
 		AsyncTask(ENamedThreads::GameThread, [this]()
 			{
-				MeshGenerator->FinishScatter();
+				//MeshGenerator->FinishScatter();
 			});
 	}
 }

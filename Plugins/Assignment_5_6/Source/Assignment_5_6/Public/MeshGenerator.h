@@ -27,6 +27,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void AddInstances(UStaticMesh* StaticMesh, const TArray<FTransform>& Transforms);
+
 
 	UPROPERTY(EditAnywhere, Category = "Scatter")
 	UMeshDataAsset* DataAsset;
@@ -48,14 +50,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Scatter")
 	UMaterialInstance* Material;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Defaults)
-	UBoxComponent* BoundingVolume;
-
 	UFUNCTION(BlueprintCallable)
 	void ScatterObjects(int32 N, FVector Scale_, FVector Location_,FString Type_);
 
-	void AddInstances(UStaticMesh* StaticMesh, const TArray<FTransform>& Transforms);
-	void FinishScatter();
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateProgressBar(float percent);
+
+
+	UPROPERTY()
+	int32 count = 0;
 private:
 
 	FAsyncTask<FAsyncTaskHandler>* AsyncScatterTask;
@@ -63,6 +66,5 @@ private:
 	UPROPERTY()
 	TMap<UStaticMesh*, UHierarchicalInstancedStaticMeshComponent*> HISMComponents;
 
-	FScopedSlowTask* SlowTask;
 
 };
