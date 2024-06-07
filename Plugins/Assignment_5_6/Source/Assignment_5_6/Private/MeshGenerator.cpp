@@ -59,9 +59,7 @@ void AMeshGenerator::AddInstances(UStaticMesh* StaticMesh, const TArray<FTransfo
 	UHierarchicalInstancedStaticMeshComponent** HISMCPtr = HISMComponents.Find(StaticMesh);
 	if (HISMCPtr && *HISMCPtr && (*HISMCPtr)->IsValidLowLevel())
 	{
-		
 				(*HISMCPtr)->AddInstances(Transforms, false);
-			
 			
 	}
 	else
@@ -74,18 +72,10 @@ void AMeshGenerator::AddInstances(UStaticMesh* StaticMesh, const TArray<FTransfo
 				NewHISMC->AddInstances(Transforms, false);
 				NewHISMC->SetMaterial(0,Material);
 
-			
-			
-
-
 	}
 
-
-
 	count++;
-	UpdateProgressBar(float(count) / float(NumberOfInstances));
 	
-
 });
 }
 

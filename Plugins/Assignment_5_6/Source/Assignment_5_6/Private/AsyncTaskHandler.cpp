@@ -20,7 +20,6 @@ void FAsyncTaskHandler::DoWork()
 
 			for (int jIndex = 0; jIndex < MeshDataStruct.Num(); jIndex++)
 			{
-				//int32 RandomMeshIndex = FMath::RandRange(0, StaticMeshes.Num() - 1);
 				UStaticMesh* CurrentMesh = MeshDataStruct[jIndex].MeshType;
 
 
@@ -30,12 +29,7 @@ void FAsyncTaskHandler::DoWork()
 					float Scale= FMath::RandRange(MeshDataStruct[jIndex].MinScale, MeshDataStruct[jIndex].MaxScale);
 					FVector Position;
 					if (MeshGenerator->Type == "Box") {
-					//Box
-						GEngine->AddOnScreenDebugMessage(
-							-1,
-							2.0f,
-							FColor::Cyan,
-							FString::Printf(TEXT("Box Generate")));
+					
 					FVector BoundingExtent = MeshGenerator->Scale*100;
 					FVector Origin = MeshGenerator->Location;
 					FBox BoundingBox(Origin - BoundingExtent, Origin + BoundingExtent);
@@ -55,35 +49,35 @@ void FAsyncTaskHandler::DoWork()
 					}
 
 
-					GEngine->AddOnScreenDebugMessage(
-						-1,
-						2.0f,
-						FColor::Cyan,
-						FString::Printf(TEXT("Random Position: %s"), *Position.ToString()));
-					//InstanceTransforms.Add(FTransform(Position));
+					
 
 					TArray<FTransform> InstanceTransforms;
 					FTransform transform;
-					transform.SetLocation(Position);
-					transform.SetScale3D(FVector(Scale));
 					FRotator Rotation_(Rotation, Rotation, Rotation);
 					FQuat QuatRotation(Rotation_);
+					transform.SetLocation(Position);
+					transform.SetScale3D(FVector(Scale));
 
 					transform.SetRotation(QuatRotation);					
 					InstanceTransforms.Add(transform);
 
 					MeshGenerator->AddInstances(CurrentMesh, InstanceTransforms);
-					FPlatformProcess::Sleep(0.01f);
-				}
+					FPlatformProcess::Sleep(0.001f);
 
+					float Progress = (float)(((jIndex) * MeshGenerator->NumberOfInstances) + (iIndex + 1)) / (float)(MeshGenerator->NumberOfInstances * DataAsset->MeshDataArr.Num());
+
+				AsyncTask(ENamedThreads::GameThread, [this ,Progress ]()
+					{
+						//MeshGenerator->FinishScatter();
+						MeshGenerator->UpdateProgressBar(Progress);
+
+					});
+				}
 
 			}
 
 		}
 
-		AsyncTask(ENamedThreads::GameThread, [this]()
-			{
-				//MeshGenerator->FinishScatter();
-			});
+		
 	}
 }
