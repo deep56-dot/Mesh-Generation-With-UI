@@ -8,7 +8,6 @@ FAsyncTaskHandler::FAsyncTaskHandler(AMeshGenerator* InMeshGenerator)
 {
 	MeshGenerator = InMeshGenerator;
 }
-
 void FAsyncTaskHandler::DoWork()
 {
 	if (MeshGenerator)
@@ -17,16 +16,13 @@ void FAsyncTaskHandler::DoWork()
 		{
 			TArray<FMeshDataStruct> MeshDataStruct = DataAsset->MeshDataArr;
 
-
-			for (int jIndex = 0; jIndex < MeshDataStruct.Num(); jIndex++)
-			{
-				UStaticMesh* CurrentMesh = MeshDataStruct[jIndex].MeshType;
-
-
 				for (int iIndex = 0; iIndex < MeshGenerator->NumberOfInstances; iIndex++)
 				{
-					float Rotation= FMath::RandRange(MeshDataStruct[jIndex].MinRotation, MeshDataStruct[jIndex].MaxRotation);
-					float Scale= FMath::RandRange(MeshDataStruct[jIndex].MinScale, MeshDataStruct[jIndex].MaxScale);
+					
+			int RandomIndex = FMath::RandRange(0, MeshDataStruct.Num() - 1);
+				UStaticMesh* CurrentMesh = MeshDataStruct[RandomIndex].MeshType;
+					float Rotation= FMath::RandRange(MeshDataStruct[RandomIndex].MinRotation, MeshDataStruct[RandomIndex].MaxRotation);
+					float Scale= FMath::RandRange(MeshDataStruct[RandomIndex].MinScale, MeshDataStruct[RandomIndex].MaxScale);
 					FVector Position;
 					if (MeshGenerator->Type == "Box") {
 					
@@ -37,19 +33,11 @@ void FAsyncTaskHandler::DoWork()
 			         Position = FMath::RandPointInBox(BoundingBox);
 					}
 					else {
-						GEngine->AddOnScreenDebugMessage(
-							-1,
-							2.0f,
-							FColor::Cyan,
-							FString::Printf(TEXT("Sphere Generate")));
 					//Sphere
 					float Radius = MeshGenerator->Scale.Z*100;
 					FVector Origin = MeshGenerator->Location;
 					Position = FMath::VRand() * FMath::FRandRange(0.0f, Radius) + Origin;
 					}
-
-
-					
 
 					TArray<FTransform> InstanceTransforms;
 					FTransform transform;
@@ -62,9 +50,9 @@ void FAsyncTaskHandler::DoWork()
 					InstanceTransforms.Add(transform);
 
 					MeshGenerator->AddInstances(CurrentMesh, InstanceTransforms);
-					FPlatformProcess::Sleep(0.001f);
+					FPlatformProcess::Sleep(0.01f);
 
-					float Progress = (float)(((jIndex) * MeshGenerator->NumberOfInstances) + (iIndex + 1)) / (float)(MeshGenerator->NumberOfInstances * DataAsset->MeshDataArr.Num());
+					float Progress = (float)(iIndex + 1) / (float)(MeshGenerator->NumberOfInstances);
 
 				AsyncTask(ENamedThreads::GameThread, [this ,Progress ]()
 					{
@@ -73,11 +61,6 @@ void FAsyncTaskHandler::DoWork()
 
 					});
 				}
-
-			}
-
 		}
-
-		
 	}
 }

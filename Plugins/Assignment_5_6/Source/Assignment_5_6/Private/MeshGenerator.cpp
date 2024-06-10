@@ -19,6 +19,19 @@ void AMeshGenerator::BeginPlay()
 	Super::BeginPlay();
 
 }
+void AMeshGenerator::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if (AsyncScatterTask)
+	{
+		if (!AsyncScatterTask->IsDone()) {
+			AsyncScatterTask->EnsureCompletion();
+
+		}
+		delete AsyncScatterTask;
+		AsyncScatterTask = nullptr;
+	}
+}
 
 // Called every frame
 void AMeshGenerator::Tick(float DeltaTime)
@@ -41,13 +54,7 @@ void AMeshGenerator::ScatterObjects(int N, FVector Scale_, FVector Location_,FSt
 		}
 	}
 
-	if (AsyncScatterTask && !AsyncScatterTask->IsDone())
-	{
-		AsyncScatterTask->EnsureCompletion();
-		delete AsyncScatterTask;
-		AsyncScatterTask = nullptr;
-	}
-
+	
 	AsyncScatterTask = new FAsyncTask<FAsyncTaskHandler>(this);
 	AsyncScatterTask->StartBackgroundTask();
 }
@@ -68,13 +75,16 @@ void AMeshGenerator::AddInstances(UStaticMesh* StaticMesh, const TArray<FTransfo
 		NewHISMC->SetStaticMesh(StaticMesh);
 
 		HISMComponents.Add(StaticMesh, NewHISMC);
+		int MaterialIndex = FMath::RandRange(0, MaterialArr.Num() - 1);
 				NewHISMC->RegisterComponentWithWorld(GetWorld());
 				NewHISMC->AddInstances(Transforms, false);
-				NewHISMC->SetMaterial(0,Material);
-
+				if(MaterialArr.Num())
+				{
+					NewHISMC->SetMaterial(0, MaterialArr[MaterialIndex]);
+				}
+					
 	}
 
-	count++;
 	
 });
 }

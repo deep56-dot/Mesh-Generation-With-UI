@@ -23,6 +23,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
+
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,7 +52,7 @@ public:
 	FString Type;
 
 	UPROPERTY(EditAnywhere, Category = "Scatter")
-	UMaterialInstance* Material;
+	TArray<UMaterialInstance*> MaterialArr;
 
 	UFUNCTION(BlueprintCallable)
 	void ScatterObjects(int32 N, FVector Scale_, FVector Location_,FString Type_);
